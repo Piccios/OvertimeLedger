@@ -3,7 +3,7 @@ require_once 'config.php';
 
 $pdo = getDBConnection();
 
-// Gestisco le richieste POST
+// Handle POST requests
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action'])) {
         switch ($_POST['action']) {
@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = $pdo->prepare("INSERT INTO extra_hours (company_id, date, hours, description) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE hours = ?, description = ?");
                 $stmt->execute([$company_id, $date, $hours, $description, $hours, $description]);
                 
-                // Redirect per evitare la ripetizione del form
+                // Redirect to avoid form resubmission
                 header('Location: index.php?success=1');
                 exit;
                 
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = $pdo->prepare("DELETE FROM extra_hours WHERE id = ?");
                 $stmt->execute([$id]);
                 
-                // Redirect per evitare la ripetizione del form
+                // Redirect to avoid form resubmission
                 header('Location: index.php?deleted=1');
                 exit;
                 
@@ -39,23 +39,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = $pdo->prepare("UPDATE extra_hours SET company_id = ?, date = ?, hours = ?, description = ? WHERE id = ?");
                 $stmt->execute([$company_id, $date, $hours, $description, $id]);
                 
-                // Redirect per evitare la ripetizione del form
+                // Redirect to avoid form resubmission
                 header('Location: index.php?edited=1');
                 exit;
         }
     }
 }
 
-// Recupero le aziende
+// Retrieve companies
 $companies = $pdo->query("SELECT * FROM companies ORDER BY name")->fetchAll();
 
-// Creo un mapping per i colori delle aziende
+// Create mapping for company colors
 $company_colors = [];
 foreach ($companies as $company) {
     $company_colors[$company['id']] = $company['color'] ?? '#6c757d';
 }
 
-// Recupero i dati della settimana corrente
+// Retrieve current week data
 $current_week_start = date('Y-m-d', strtotime('monday this week'));
 $current_week_end = date('Y-m-d', strtotime('sunday this week'));
 
@@ -69,7 +69,7 @@ $stmt = $pdo->prepare("
 $stmt->execute([$current_week_start, $current_week_end]);
 $week_data = $stmt->fetchAll();
 
-// Recupero il riepilogo mensile
+// Retrieve monthly summary
 $current_month = date('Y-m');
 $stmt = $pdo->prepare("
     SELECT c.id as company_id, c.name as company_name, c.color as company_color, SUM(eh.hours) as total_hours
@@ -82,7 +82,7 @@ $stmt = $pdo->prepare("
 $stmt->execute([$current_month]);
 $monthly_summary = $stmt->fetchAll();
 
-// Mesi in italiano
+// Italian months
 $italian_months = [
     'January' => 'Gennaio', 'February' => 'Febbraio', 'March' => 'Marzo',
     'April' => 'Aprile', 'May' => 'Maggio', 'June' => 'Giugno',
@@ -90,7 +90,7 @@ $italian_months = [
     'October' => 'Ottobre', 'November' => 'Novembre', 'December' => 'Dicembre'
 ];
 
-// Giorni in italiano
+// Italian days
 $italian_days = [
     'Mon' => 'Lun', 'Tue' => 'Mar', 'Wed' => 'Mer', 'Thu' => 'Gio',
     'Fri' => 'Ven', 'Sat' => 'Sab', 'Sun' => 'Dom'
@@ -98,19 +98,19 @@ $italian_days = [
 
 $current_month_name = $italian_months[date('F')];
 
-// Funzione per ottenere lo stile del badge dell'azienda
+// Function to get company badge style
 function getCompanyBadgeStyle($color) {
     return "background-color: {$color}; color: " . (isColorDark($color) ? 'white' : 'black') . ";";
 }
 
-// Funzione per determinare se un colore è scuro (per scegliere il colore del testo appropriato)
+// Function to determine if a color is dark (to choose appropriate text color)
 function isColorDark($color) {
     $hex = str_replace('#', '', $color);
     $r = hexdec(substr($hex, 0, 2));
     $g = hexdec(substr($hex, 2, 2));
     $b = hexdec(substr($hex, 4, 2));
     
-    // Calcolo la luminosità usando la formula di luminanza
+    // Calculate brightness using luminance formula
     $brightness = (($r * 299) + ($g * 587) + ($b * 114)) / 1000;
     
     return $brightness < 128;
@@ -206,7 +206,7 @@ function isColorDark($color) {
             <div class="col-12">
                 <a href="manage_companies.php" class="btn btn-outline-light">
                     <i class="fas fa-building me-2"></i>
-                    Gestione Aziende
+                    Company Management
                 </a>
             </div>
         </div>
@@ -214,7 +214,7 @@ function isColorDark($color) {
         <div class="row">
             <div class="col-12">
                 <h1 class="text-white text-center mb-5">
-                    <i class="fas fa-clock"></i> Gestore Ore Straordinarie
+                    <i class="fas fa-clock"></i> OvertimeLedger
                 </h1>
             </div>
         </div>
@@ -224,31 +224,31 @@ function isColorDark($color) {
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-plus"></i> Aggiungi Ore Straordinarie</h5>
+                        <h5 class="mb-0"><i class="fas fa-plus"></i> Add Extra Hours</h5>
                     </div>
                     <div class="card-body">
                         <form method="POST" class="row g-3">
                             <input type="hidden" name="action" value="add">
                             <div class="col-md-3">
-                                <label for="company_id" class="form-label">Azienda</label>
+                                <label for="company_id" class="form-label">Company</label>
                                 <select name="company_id" id="company_id" class="form-select" required>
-                                    <option value="">Seleziona Azienda</option>
+                                    <option value="">Select Company *</option>
                                     <?php foreach ($companies as $company): ?>
                                         <option value="<?= $company['id'] ?>"><?= htmlspecialchars($company['name']) ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <label for="date" class="form-label">Data</label>
+                                <label for="date" class="form-label">Date *</label>
                                 <input type="date" name="date" id="date" class="form-control" value="<?= date('Y-m-d') ?>" required>
                             </div>
                             <div class="col-md-2">
-                                <label for="hours" class="form-label">Ore</label>
+                                <label for="hours" class="form-label">Hours *</label>
                                 <input type="number" name="hours" id="hours" class="form-control" step="0.5" min="0" placeholder="2.5" required>
                             </div>
                             <div class="col-md-3">
-                                <label for="description" class="form-label">Descrizione</label>
-                                <input type="text" name="description" id="description" class="form-control" placeholder="Opzionale">
+                                <label for="description" class="form-label">Description</label>
+                                <input type="text" name="description" id="description" class="form-control" placeholder="Optional">
                             </div>
                             <div class="col-md-1">
                                 <label class="form-label">&nbsp;</label>
@@ -269,22 +269,22 @@ function isColorDark($color) {
                     <div class="card-header">
                         <h5 class="mb-0">
                             <i class="fas fa-calendar-week"></i> 
-                            Settimana Corrente (<?= date('d', strtotime($current_week_start)) ?> <?= $italian_months[date('F', strtotime($current_week_start))] ?> - <?= date('d', strtotime($current_week_end)) ?> <?= $italian_months[date('F', strtotime($current_week_end))] ?>)
+                            Current Week (<?= date('d', strtotime($current_week_start)) ?> <?= $italian_months[date('F', strtotime($current_week_start))] ?> - <?= date('d', strtotime($current_week_end)) ?> <?= $italian_months[date('F', strtotime($current_week_end))] ?>)
                         </h5>
                     </div>
                     <div class="card-body">
                         <?php if (empty($week_data)): ?>
-                            <p class="text-muted text-center">Nessun straordinario registrato per questa settimana.</p>
+                            <p class="text-muted text-center">No overtime registered for this week.</p>
                         <?php else: ?>
                             <div class="table-responsive">
                                 <table class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th>Data</th>
-                                            <th>Azienda</th>
-                                            <th>Ore</th>
-                                            <th>Descrizione</th>
-                                            <th>Azioni</th>
+                                            <th>Date</th>
+                                            <th>Company</th>
+                                            <th>Hours</th>
+                                            <th>Description</th>
+                                            <th>Actions</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -343,15 +343,15 @@ function isColorDark($color) {
                     <div class="card-header">
                         <h5 class="mb-0">
                             <i class="fas fa-chart-bar"></i> 
-                            Riepilogo Mensile (<?= $current_month_name ?> <?= date('Y') ?>)
+                            Monthly report (<?= $current_month_name ?> <?= date('Y') ?>)
                             <a href="export_excel.php" class="btn btn-success btn-sm float-end">
-                                <i class="fas fa-download"></i> Esporta Excel
+                                <i class="fas fa-download"></i> Export Excel
                             </a>
                         </h5>
                     </div>
                     <div class="card-body">
                         <?php if (empty($monthly_summary)): ?>
-                            <p class="text-muted text-center">Nessun dato per questo mese.</p>
+                            <p class="text-muted text-center">No data for this month.</p>
                         <?php else: ?>
                             <!-- Totale ore mensili -->
                             <?php 
@@ -363,7 +363,7 @@ function isColorDark($color) {
                                         <div class="card-body text-center">
                                             <h4 class="mb-2">
                                                 <i class="fas fa-chart-line me-2"></i>
-                                                Totale Ore Mensili
+                                                Total Monthly Hours
                                             </h4>
                                             <h1 class="display-4 mb-0"><?= $total_monthly_hours ?>h</h1>
                                             <small class="opacity-75"><?= $current_month_name ?> <?= date('Y') ?></small>
@@ -375,7 +375,7 @@ function isColorDark($color) {
                             <!-- Breakdown per azienda -->
                             <h6 class="text-muted mb-3">
                                 <i class="fas fa-building me-2"></i>
-                                Riepilogo per Azienda
+                                Company breakdown
                             </h6>
                             <div class="row">
                                 <?php foreach ($monthly_summary as $summary): ?>
@@ -388,7 +388,7 @@ function isColorDark($color) {
                                                 <h6 class="card-title"><?= htmlspecialchars($summary['company_name']) ?></h6>
                                                 <h3 style="color: <?= $company_color ?>;"><?= $summary['total_hours'] ?>h</h3>
                                                 <small class="text-muted">
-                                                    <?= round(($summary['total_hours'] / $total_monthly_hours) * 100, 1) ?>% del totale
+                                                    <?= round(($summary['total_hours'] / $total_monthly_hours) * 100, 1) ?>% of total
                                                 </small>
                                             </div>
                                         </div>
@@ -408,7 +408,7 @@ function isColorDark($color) {
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="editModalLabel">
-                        <i class="fas fa-edit"></i> Modifica Record
+                        <i class="fas fa-edit"></i> Edit Record
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -417,7 +417,7 @@ function isColorDark($color) {
                         <input type="hidden" name="action" value="edit">
                         <input type="hidden" name="id" id="edit_id">
                         <div class="mb-3">
-                            <label for="edit_company_id" class="form-label">Azienda</label>
+                            <label for="edit_company_id" class="form-label">Company</label>
                             <select name="company_id" id="edit_company_id" class="form-select" required>
                                 <?php foreach ($companies as $company): ?>
                                     <option value="<?= $company['id'] ?>"><?= htmlspecialchars($company['name']) ?></option>
@@ -425,22 +425,22 @@ function isColorDark($color) {
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="edit_date" class="form-label">Data</label>
+                            <label for="edit_date" class="form-label">Date</label>
                             <input type="date" name="date" id="edit_date" class="form-control" required>
                         </div>
                         <div class="mb-3">
-                            <label for="edit_hours" class="form-label">Ore</label>
+                            <label for="edit_hours" class="form-label">Hours</label>
                             <input type="number" name="hours" id="edit_hours" class="form-control" step="0.5" min="0" required>
                         </div>
                         <div class="mb-3">
-                            <label for="edit_description" class="form-label">Descrizione (Opzionale)</label>
+                            <label for="edit_description" class="form-label">Description (Optional)</label>
                             <input type="text" name="description" id="edit_description" class="form-control">
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Salva Modifiche
+                            <i class="fas fa-save"></i> Save
                         </button>
                     </div>
                 </form>
@@ -459,7 +459,7 @@ function isColorDark($color) {
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
             <div class="toast-body">
-                Record aggiunto con successo!
+                Record added successfully!
             </div>
         </div>
     </div>
@@ -474,7 +474,7 @@ function isColorDark($color) {
                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
             <div class="toast-body">
-                Record eliminato con successo!
+                Record deleted successfully!
             </div>
         </div>
     </div>
@@ -489,7 +489,7 @@ function isColorDark($color) {
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
             <div class="toast-body">
-                Record modificato con successo!
+                Record modified successfully!
             </div>
         </div>
     </div>
@@ -565,7 +565,7 @@ function isColorDark($color) {
     </style>
 
     <script>
-        // Nascondi la notifica dopo 4 secondi e pulisci l'URL
+        // Hide notification after 4 seconds and clean URL
         document.addEventListener('DOMContentLoaded', function() {
             const toasts = ['successToast', 'deleteToast', 'editToast'];
             let hasToast = false;
@@ -583,9 +583,9 @@ function isColorDark($color) {
                 }
             });
             
-            // Pulisci i parametri dell'URL dopo aver mostrato la notifica
+            // Clean URL parameters after showing notification
             if (hasToast) {
-                // Rimuovi i parametri dell'URL senza ricaricare la pagina
+                // Remove URL parameters without reloading the page
                 const url = new URL(window.location);
                 url.searchParams.delete('success');
                 url.searchParams.delete('deleted');
@@ -594,7 +594,7 @@ function isColorDark($color) {
             }
         });
 
-        // Event listeners per la modifica dei record
+        // Event listeners for record editing
         document.addEventListener('click', function(e) {
             if (e.target.closest('.edit-btn')) {
                 const button = e.target.closest('.edit-btn');
@@ -604,20 +604,20 @@ function isColorDark($color) {
                 const hours = button.getAttribute('data-hours');
                 const description = button.getAttribute('data-description');
                 
-                // Popola il form di modifica
+                // Populate edit form
                 document.getElementById('edit_id').value = id;
                 document.getElementById('edit_company_id').value = companyId;
                 document.getElementById('edit_date').value = date;
                 document.getElementById('edit_hours').value = hours;
                 document.getElementById('edit_description').value = description;
                 
-                // Mostra il modale
+                // Show modal
                 const editModal = new bootstrap.Modal(document.getElementById('editModal'));
                 editModal.show();
             }
         });
 
-        // Funzionalità per il cambio di lingua
+        // Language switching functionality
         document.addEventListener('DOMContentLoaded', function() {
             const languageRadios = document.querySelectorAll('input[name="language"]');
             

@@ -1,10 +1,10 @@
 <?php
 require_once 'config.php';
 
-// Connessione al database
+// Database connection
 $pdo = getDBConnection();
 
-// Dati del mese corrente
+// Current month data
 $current_month = date('Y-m');
 $stmt = $pdo->prepare("
     SELECT 
@@ -21,7 +21,7 @@ $stmt = $pdo->prepare("
 $stmt->execute([$current_month]);
 $monthly_data = $stmt->fetchAll();
 
-// Riepilogo mensile per azienda
+// Monthly summary by company
 $stmt = $pdo->prepare("
     SELECT c.name as company_name, SUM(eh.hours) as total_hours
     FROM extra_hours eh 
@@ -33,7 +33,7 @@ $stmt = $pdo->prepare("
 $stmt->execute([$current_month]);
 $monthly_summary = $stmt->fetchAll();
 
-// Mesi in italiano
+// Italian months
 $italian_months = [
     'January' => 'Gennaio', 'February' => 'Febbraio', 'March' => 'Marzo',
     'April' => 'Aprile', 'May' => 'Maggio', 'June' => 'Giugno',
@@ -44,7 +44,7 @@ $italian_months = [
 $current_month_name = $italian_months[date('F')];
 $current_year = date('Y');
 
-// Creo un file html che verrà interpretato da Excel
+// Create HTML file that will be interpreted by Excel
 $html_content = '
 <!DOCTYPE html>
 <html>
@@ -147,12 +147,12 @@ $html_content .= '
 </body>
 </html>';
 
-// Setto gli headers per il download del file excel
+// Set headers for Excel file download
 header('Content-Type: application/vnd.ms-excel');
 header('Content-Disposition: attachment; filename="Ore_Straordinarie_' . $current_month_name . '_' . $current_year . '.xls"');
 header('Cache-Control: max-age=0');
 
-// Output HTML content che Excel interpreterà
+// Output HTML content that Excel will interpret
 echo $html_content;
 exit;
 ?> 

@@ -3,7 +3,7 @@ require_once 'config.php';
 
 $pdo = getDBConnection();
 
-// Gestisco le richieste POST
+// Handle POST requests
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action'])) {
         switch ($_POST['action']) {
@@ -20,13 +20,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         exit;
                     } catch (PDOException $e) {
                         if ($e->getCode() == 23000) { // Duplicate entry
-                            $error = 'Il nome dell\'azienda esiste già.';
+                            $error = 'Company name already exists.';
                         } else {
-                            $error = 'Errore nell\'aggiunta dell\'azienda.';
+                            $error = 'Error adding company.';
                         }
                     }
                 } else {
-                    $error = 'Il nome dell\'azienda è obbligatorio.';
+                    $error = 'Company name is required.';
                 }
                 break;
                 
@@ -44,26 +44,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         exit;
                     } catch (PDOException $e) {
                         if ($e->getCode() == 23000) {
-                            $error = 'Il nome dell\'azienda esiste già.';
+                            $error = 'Company name already exists.';
                         } else {
-                            $error = 'Errore nell\'aggiornamento dell\'azienda.';
+                            $error = 'Error updating company.';
                         }
                     }
                 } else {
-                    $error = 'Il nome dell\'azienda è obbligatorio.';
+                    $error = 'Company name is required.';
                 }
                 break;
                 
             case 'delete_company':
                 $id = $_POST['id'];
                 
-                // Controllo se l'azienda ha qualche record
+                // Check if company has any records
                 $stmt = $pdo->prepare("SELECT COUNT(*) FROM extra_hours WHERE company_id = ?");
                 $stmt->execute([$id]);
                 $has_records = $stmt->fetchColumn() > 0;
                 
                 if ($has_records) {
-                    $error = 'Impossibile eliminare un\'azienda che ha registrazioni di ore straordinarie. Elimina prima tutte le registrazioni.';
+                    $error = 'Cannot delete a company that has overtime records. Delete all records first.';
                 } else {
                     $stmt = $pdo->prepare("DELETE FROM companies WHERE id = ?");
                     $stmt->execute([$id]);
@@ -76,22 +76,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Recupero tutte le aziende
+// Retrieve all companies
 $companies = $pdo->query("SELECT * FROM companies ORDER BY name")->fetchAll();
 
-// Funzione per ottenere lo stile del badge dell'azienda
+// Function to get company badge style
 function getCompanyBadgeStyle($color) {
     return "background-color: {$color}; color: " . (isColorDark($color) ? 'white' : 'black') . ";";
 }
 
-// Funzione per determinare se un colore è scuro (per scegliere il colore del testo appropriato)
+// Function to determine if a color is dark (to choose appropriate text color)
 function isColorDark($color) {
     $hex = str_replace('#', '', $color);
     $r = hexdec(substr($hex, 0, 2));
     $g = hexdec(substr($hex, 2, 2));
     $b = hexdec(substr($hex, 4, 2));
     
-    // Calcolo la luminosità usando la formula di luminanza
+    // Calculate brightness using luminance formula
     $brightness = (($r * 299) + ($g * 587) + ($b * 114)) / 1000;
     
     return $brightness < 128;
