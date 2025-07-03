@@ -3,7 +3,7 @@ require_once 'config.php';
 
 $pdo = getDBConnection();
 
-// Handle form submissions
+// Gestisco le richieste POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action'])) {
         switch ($_POST['action']) {
@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = $pdo->prepare("INSERT INTO extra_hours (company_id, date, hours, description) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE hours = ?, description = ?");
                 $stmt->execute([$company_id, $date, $hours, $description, $hours, $description]);
                 
-                // Redirect to prevent form resubmission
+                // Redirect per evitare la ripetizione del form
                 header('Location: index.php?success=1');
                 exit;
                 
@@ -25,7 +25,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = $pdo->prepare("DELETE FROM extra_hours WHERE id = ?");
                 $stmt->execute([$id]);
                 
-                // Redirect to prevent form resubmission
+                // Redirect per evitare la ripetizione del form
                 header('Location: index.php?deleted=1');
                 exit;
                 
@@ -39,23 +39,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = $pdo->prepare("UPDATE extra_hours SET company_id = ?, date = ?, hours = ?, description = ? WHERE id = ?");
                 $stmt->execute([$company_id, $date, $hours, $description, $id]);
                 
-                // Redirect to prevent form resubmission
+                // Redirect per evitare la ripetizione del form
                 header('Location: index.php?edited=1');
                 exit;
         }
     }
 }
 
-// Get companies
+// Recupero le aziende
 $companies = $pdo->query("SELECT * FROM companies ORDER BY name")->fetchAll();
 
-// Create a color mapping for companies
+// Creo un mapping per i colori delle aziende
 $company_colors = [];
 foreach ($companies as $company) {
     $company_colors[$company['id']] = $company['color'] ?? '#6c757d';
 }
 
-// Get current week's data
+// Recupero i dati della settimana corrente
 $current_week_start = date('Y-m-d', strtotime('monday this week'));
 $current_week_end = date('Y-m-d', strtotime('sunday this week'));
 
@@ -69,7 +69,7 @@ $stmt = $pdo->prepare("
 $stmt->execute([$current_week_start, $current_week_end]);
 $week_data = $stmt->fetchAll();
 
-// Get monthly summary
+// Recupero il riepilogo mensile
 $current_month = date('Y-m');
 $stmt = $pdo->prepare("
     SELECT c.id as company_id, c.name as company_name, c.color as company_color, SUM(eh.hours) as total_hours
@@ -82,7 +82,7 @@ $stmt = $pdo->prepare("
 $stmt->execute([$current_month]);
 $monthly_summary = $stmt->fetchAll();
 
-// Italian month names
+// Mesi in italiano
 $italian_months = [
     'January' => 'Gennaio', 'February' => 'Febbraio', 'March' => 'Marzo',
     'April' => 'Aprile', 'May' => 'Maggio', 'June' => 'Giugno',
@@ -90,7 +90,7 @@ $italian_months = [
     'October' => 'Ottobre', 'November' => 'Novembre', 'December' => 'Dicembre'
 ];
 
-// Italian day names
+// Giorni in italiano
 $italian_days = [
     'Mon' => 'Lun', 'Tue' => 'Mar', 'Wed' => 'Mer', 'Thu' => 'Gio',
     'Fri' => 'Ven', 'Sat' => 'Sab', 'Sun' => 'Dom'
@@ -98,19 +98,19 @@ $italian_days = [
 
 $current_month_name = $italian_months[date('F')];
 
-// Function to get company badge style from color
+// Funzione per ottenere lo stile del badge dell'azienda
 function getCompanyBadgeStyle($color) {
     return "background-color: {$color}; color: " . (isColorDark($color) ? 'white' : 'black') . ";";
 }
 
-// Function to determine if a color is dark (to choose appropriate text color)
+// Funzione per determinare se un colore è scuro (per scegliere il colore del testo appropriato)
 function isColorDark($color) {
     $hex = str_replace('#', '', $color);
     $r = hexdec(substr($hex, 0, 2));
     $g = hexdec(substr($hex, 2, 2));
     $b = hexdec(substr($hex, 4, 2));
     
-    // Calculate brightness using luminance formula
+    // Calcolo la luminosità usando la formula di luminanza
     $brightness = (($r * 299) + ($g * 587) + ($b * 114)) / 1000;
     
     return $brightness < 128;
@@ -156,7 +156,7 @@ function isColorDark($color) {
             padding: 0.3em 0.6em;
         }
         
-        /* Company-specific badge colors */
+        /* Colori specifici per le aziende */
         .badge-defenda {
             background-color: #1e3a8a !important;
             color: white !important;
@@ -172,7 +172,7 @@ function isColorDark($color) {
             color: white !important;
         }
         
-        /* Company-specific text colors */
+        /* Colori specifici per il testo delle aziende */
         .text-defenda {
             color: #1e3a8a !important;
         }
@@ -185,7 +185,7 @@ function isColorDark($color) {
             color: #f59e0b !important;
         }
         
-        /* Company-specific borders */
+        /* Bordi specifici per le aziende */
         .border-defenda {
             border-color: #1e3a8a !important;
         }
@@ -201,7 +201,7 @@ function isColorDark($color) {
 </head>
 <body>
     <div class="container py-5">
-        <!-- Management Links -->
+        <!-- Link per la gestione delle aziende -->
         <div class="row mb-3">
             <div class="col-12">
                 <a href="manage_companies.php" class="btn btn-outline-light">
@@ -219,7 +219,7 @@ function isColorDark($color) {
             </div>
         </div>
 
-        <!-- Form Aggiunta Nuova Voce -->
+        <!-- Form per l'aggiunta di nuove voci -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card">
@@ -262,7 +262,7 @@ function isColorDark($color) {
             </div>
         </div>
 
-        <!-- Riepilogo Settimana Corrente -->
+        <!-- Riepilogo della settimana corrente -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card">
@@ -336,7 +336,7 @@ function isColorDark($color) {
             </div>
         </div>
 
-        <!-- Riepilogo Mensile -->
+        <!-- Riepilogo mensile -->
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -353,7 +353,7 @@ function isColorDark($color) {
                         <?php if (empty($monthly_summary)): ?>
                             <p class="text-muted text-center">Nessun dato per questo mese.</p>
                         <?php else: ?>
-                            <!-- Total Monthly Hours -->
+                            <!-- Totale ore mensili -->
                             <?php 
                             $total_monthly_hours = array_sum(array_column($monthly_summary, 'total_hours'));
                             ?>
@@ -372,7 +372,7 @@ function isColorDark($color) {
                                 </div>
                             </div>
                             
-                            <!-- Breakdown by Company -->
+                            <!-- Breakdown per azienda -->
                             <h6 class="text-muted mb-3">
                                 <i class="fas fa-building me-2"></i>
                                 Riepilogo per Azienda
@@ -402,7 +402,7 @@ function isColorDark($color) {
         </div>
     </div>
 
-    <!-- Edit Modal -->
+    <!-- Modale per la modifica dei record -->
     <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -450,7 +450,7 @@ function isColorDark($color) {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
-    <!-- Success Toast Notification -->
+    <!-- Notifica di successo -->
     <?php if (isset($_GET['success'])): ?>
     <div class="toast-container position-fixed top-0 end-0 p-3">
         <div id="successToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
@@ -465,7 +465,7 @@ function isColorDark($color) {
     </div>
     <?php endif; ?>
 
-    <!-- Delete Toast Notification -->
+    <!-- Notifica di eliminazione -->
     <?php if (isset($_GET['deleted'])): ?>
     <div class="toast-container position-fixed top-0 end-0 p-3">
         <div id="deleteToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
@@ -480,7 +480,7 @@ function isColorDark($color) {
     </div>
     <?php endif; ?>
 
-    <!-- Edit Toast Notification -->
+    <!-- Notifica di modifica -->
     <?php if (isset($_GET['edited'])): ?>
     <div class="toast-container position-fixed top-0 end-0 p-3">
         <div id="editToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
@@ -496,7 +496,7 @@ function isColorDark($color) {
     <?php endif; ?>
 
     <style>
-        /* Toast Animation */
+        /* Animazione delle notifiche */
         .toast.show {
             animation: slideInRight 0.5s ease-out;
         }
@@ -527,7 +527,7 @@ function isColorDark($color) {
             }
         }
         
-        /* Toast Styling */
+        /* Stili delle notifiche */
         .toast {
             border: none;
             border-radius: 10px;
@@ -544,7 +544,7 @@ function isColorDark($color) {
             font-weight: 500;
         }
         
-        /* Success animation for the icon */
+        /* Animazione per l'icona di successo */
         .toast.show .fas.fa-check-circle {
             animation: bounceIn 0.6s ease-out;
         }
@@ -565,7 +565,7 @@ function isColorDark($color) {
     </style>
 
     <script>
-        // Auto-hide toast after 4 seconds and clean URL
+        // Nascondi la notifica dopo 4 secondi e pulisci l'URL
         document.addEventListener('DOMContentLoaded', function() {
             const toasts = ['successToast', 'deleteToast', 'editToast'];
             let hasToast = false;
@@ -583,9 +583,9 @@ function isColorDark($color) {
                 }
             });
             
-            // Clean URL parameters after showing toast
+            // Pulisci i parametri dell'URL dopo aver mostrato la notifica
             if (hasToast) {
-                // Remove URL parameters without refreshing the page
+                // Rimuovi i parametri dell'URL senza ricaricare la pagina
                 const url = new URL(window.location);
                 url.searchParams.delete('success');
                 url.searchParams.delete('deleted');
@@ -594,7 +594,7 @@ function isColorDark($color) {
             }
         });
 
-        // Edit record event listeners
+        // Event listeners per la modifica dei record
         document.addEventListener('click', function(e) {
             if (e.target.closest('.edit-btn')) {
                 const button = e.target.closest('.edit-btn');
@@ -604,20 +604,20 @@ function isColorDark($color) {
                 const hours = button.getAttribute('data-hours');
                 const description = button.getAttribute('data-description');
                 
-                // Populate the edit form
+                // Popola il form di modifica
                 document.getElementById('edit_id').value = id;
                 document.getElementById('edit_company_id').value = companyId;
                 document.getElementById('edit_date').value = date;
                 document.getElementById('edit_hours').value = hours;
                 document.getElementById('edit_description').value = description;
                 
-                // Show the modal
+                // Mostra il modale
                 const editModal = new bootstrap.Modal(document.getElementById('editModal'));
                 editModal.show();
             }
         });
 
-        // Language switching functionality
+        // Funzionalità per il cambio di lingua
         document.addEventListener('DOMContentLoaded', function() {
             const languageRadios = document.querySelectorAll('input[name="language"]');
             
