@@ -205,28 +205,21 @@ function isColorDark($color) {
         
         <div class="row">
             <div class="col-12">
+                
                 <h1 class="text-white text-center mb-4">
                     <i class="fas fa-clock"></i> OvertimeLedger
                 </h1>
-                
                 <!-- Language Switcher -->
-                <div class="d-flex justify-content-center mb-4">
+                <div class="d-flex justify-content-end mb-4">
                     <div class="card bg-white bg-opacity-10 border-0">
-                        <div class="card-body p-3">
+                        <div class="card-body">
                             <div class="row align-items-center">
-                                <div class="col-auto">
-                                    <span class="text-white fw-bold">
-                                        <i class="fas fa-language me-2"></i>
-                                        <?= t('language', $current_lang) ?>:
-                                    </span>
-                                </div>
                                 <div class="col-auto">
                                     <div class="btn-group" role="group">
                                         <input type="radio" class="btn-check" name="language" id="lang_it" value="it" <?= $current_lang === 'it' ? 'checked' : '' ?>>
                                         <label class="btn btn-outline-light btn-sm" for="lang_it">
                                             🇮🇹 <?= t('italian', $current_lang) ?>
                                         </label>
-                                        
                                         <input type="radio" class="btn-check" name="language" id="lang_en" value="en" <?= $current_lang === 'en' ? 'checked' : '' ?>>
                                         <label class="btn btn-outline-light btn-sm" for="lang_en">
                                             🇺🇸 <?= t('english', $current_lang) ?>
@@ -374,17 +367,17 @@ function isColorDark($color) {
                     <div class="card-header">
                         <h5 class="mb-0">
                             <i class="fas fa-chart-bar"></i> 
-                            Monthly report (<?= $current_month_name ?> <?= date('Y') ?>)
+                            <?= t('monthly_summary', $current_lang) ?> (<?= $current_month_name ?> <?= date('Y') ?>)
                             <a href="export_excel.php" class="btn btn-success btn-sm float-end">
-                                <i class="fas fa-download"></i> Export Excel
+                                <i class="fas fa-download"></i> <?= t('export_excel', $current_lang) ?>
                             </a>
                         </h5>
                     </div>
                     <div class="card-body">
                         <?php if (empty($monthly_summary)): ?>
-                            <p class="text-muted text-center">No data for this month.</p>
+                            <p class="text-muted text-center"><?= t('no_data_month', $current_lang) ?></p>
                         <?php else: ?>
-                            <!-- Totale ore mensili -->
+                            <!-- Total monthly hours -->
                             <?php 
                             $total_monthly_hours = array_sum(array_column($monthly_summary, 'total_hours'));
                             ?>
@@ -394,7 +387,7 @@ function isColorDark($color) {
                                         <div class="card-body text-center">
                                             <h4 class="mb-2">
                                                 <i class="fas fa-chart-line me-2"></i>
-                                                Total Monthly Hours
+                                                <?= t('total_monthly_hours', $current_lang) ?>
                                             </h4>
                                             <h1 class="display-4 mb-0"><?= $total_monthly_hours ?>h</h1>
                                             <small class="opacity-75"><?= $current_month_name ?> <?= date('Y') ?></small>
@@ -403,10 +396,10 @@ function isColorDark($color) {
                                 </div>
                             </div>
                             
-                            <!-- Breakdown per azienda -->
+                            <!-- Company breakdown -->
                             <h6 class="text-muted mb-3">
                                 <i class="fas fa-building me-2"></i>
-                                Company breakdown
+                                <?= t('summary_by_company', $current_lang) ?>
                             </h6>
                             <div class="row">
                                 <?php foreach ($monthly_summary as $summary): ?>
@@ -419,7 +412,7 @@ function isColorDark($color) {
                                                 <h6 class="card-title"><?= htmlspecialchars($summary['company_name']) ?></h6>
                                                 <h3 style="color: <?= $company_color ?>;"><?= $summary['total_hours'] ?>h</h3>
                                                 <small class="text-muted">
-                                                    <?= round(($summary['total_hours'] / $total_monthly_hours) * 100, 1) ?>% of total
+                                                    <?= round(($summary['total_hours'] / $total_monthly_hours) * 100, 1) ?>% <?= t('of_total', $current_lang) ?>
                                                 </small>
                                             </div>
                                         </div>
@@ -439,7 +432,7 @@ function isColorDark($color) {
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="editModalLabel">
-                        <i class="fas fa-edit"></i> Edit Record
+                        <i class="fas fa-edit"></i> <?= t('edit_record', $current_lang) ?>
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -448,7 +441,7 @@ function isColorDark($color) {
                         <input type="hidden" name="action" value="edit">
                         <input type="hidden" name="id" id="edit_id">
                         <div class="mb-3">
-                            <label for="edit_company_id" class="form-label">Company</label>
+                            <label for="edit_company_id" class="form-label"><?= t('company', $current_lang) ?></label>
                             <select name="company_id" id="edit_company_id" class="form-select" required>
                                 <?php foreach ($companies as $company): ?>
                                     <option value="<?= $company['id'] ?>"><?= htmlspecialchars($company['name']) ?></option>
@@ -456,22 +449,22 @@ function isColorDark($color) {
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="edit_date" class="form-label">Date</label>
+                            <label for="edit_date" class="form-label"><?= t('date', $current_lang) ?></label>
                             <input type="date" name="date" id="edit_date" class="form-control" required>
                         </div>
                         <div class="mb-3">
-                            <label for="edit_hours" class="form-label">Hours</label>
+                            <label for="edit_hours" class="form-label"><?= t('hours', $current_lang) ?></label>
                             <input type="number" name="hours" id="edit_hours" class="form-control" step="0.5" min="0" required>
                         </div>
                         <div class="mb-3">
-                            <label for="edit_description" class="form-label">Description (Optional)</label>
+                            <label for="edit_description" class="form-label"><?= t('edit_description_optional', $current_lang) ?></label>
                             <input type="text" name="description" id="edit_description" class="form-control">
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= t('cancel', $current_lang) ?></button>
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Save
+                            <i class="fas fa-save"></i> <?= t('save_changes', $current_lang) ?>
                         </button>
                     </div>
                 </form>
@@ -490,7 +483,7 @@ function isColorDark($color) {
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
             <div class="toast-body">
-                Record added successfully!
+                <?= t('record_added', $current_lang) ?>
             </div>
         </div>
     </div>
@@ -505,7 +498,7 @@ function isColorDark($color) {
                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
             <div class="toast-body">
-                Record deleted successfully!
+                <?= t('record_deleted', $current_lang) ?>
             </div>
         </div>
     </div>
@@ -520,7 +513,7 @@ function isColorDark($color) {
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
             <div class="toast-body">
-                Record modified successfully!
+                <?= t('record_edited', $current_lang) ?>
             </div>
         </div>
     </div>
