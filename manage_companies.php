@@ -3,7 +3,7 @@ require_once 'config.php';
 
 $pdo = getDBConnection();
 
-// Handle form submissions
+// Gestisco le richieste POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['action'])) {
         switch ($_POST['action']) {
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             case 'delete_company':
                 $id = $_POST['id'];
                 
-                // Check if company has any records
+                // Controllo se l'azienda ha qualche record
                 $stmt = $pdo->prepare("SELECT COUNT(*) FROM extra_hours WHERE company_id = ?");
                 $stmt->execute([$id]);
                 $has_records = $stmt->fetchColumn() > 0;
@@ -76,22 +76,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// Get all companies
+// Recupero tutte le aziende
 $companies = $pdo->query("SELECT * FROM companies ORDER BY name")->fetchAll();
 
-// Function to get company badge style from color
+// Funzione per ottenere lo stile del badge dell'azienda
 function getCompanyBadgeStyle($color) {
     return "background-color: {$color}; color: " . (isColorDark($color) ? 'white' : 'black') . ";";
 }
 
-// Function to determine if a color is dark (to choose appropriate text color)
+// Funzione per determinare se un colore è scuro (per scegliere il colore del testo appropriato)
 function isColorDark($color) {
     $hex = str_replace('#', '', $color);
     $r = hexdec(substr($hex, 0, 2));
     $g = hexdec(substr($hex, 2, 2));
     $b = hexdec(substr($hex, 4, 2));
     
-    // Calculate brightness using luminance formula
+    // Calcolo la luminosità usando la formula di luminanza
     $brightness = (($r * 299) + ($g * 587) + ($b * 114)) / 1000;
     
     return $brightness < 128;
@@ -168,7 +168,7 @@ function isColorDark($color) {
         </div>
         <?php endif; ?>
 
-        <!-- Add New Company Form -->
+        <!-- Form per l'aggiunta di nuove aziende -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card">
@@ -207,7 +207,7 @@ function isColorDark($color) {
             </div>
         </div>
 
-        <!-- Companies List -->
+        <!-- Elenco delle aziende -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card">
@@ -262,7 +262,7 @@ function isColorDark($color) {
         </div>
     </div>
 
-    <!-- Edit Company Modal -->
+    <!-- Modale per la modifica delle aziende -->
     <div class="modal fade" id="editCompanyModal" tabindex="-1" aria-labelledby="editCompanyModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
@@ -303,7 +303,7 @@ function isColorDark($color) {
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Success Toast Notifications -->
+    <!-- Notifiche di successo -->
     <?php if (isset($_GET['success'])): ?>
     <div class="toast-container position-fixed top-0 end-0 p-3">
         <div id="successToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
@@ -350,7 +350,7 @@ function isColorDark($color) {
     <?php endif; ?>
 
     <script>
-        // Auto-hide toasts and clean URL
+        // Nascondi la notifica dopo 4 secondi e pulisci l'URL
         document.addEventListener('DOMContentLoaded', function() {
             const toasts = ['successToast', 'editToast', 'deleteToast'];
             let hasToast = false;
@@ -368,7 +368,7 @@ function isColorDark($color) {
                 }
             });
             
-            // Clean URL parameters after showing toast
+            // Pulisci i parametri dell'URL dopo aver mostrato la notifica
             if (hasToast) {
                 const url = new URL(window.location);
                 url.searchParams.delete('success');
@@ -378,7 +378,7 @@ function isColorDark($color) {
             }
         });
 
-        // Edit company functionality
+        // Funzionalità per la modifica delle aziende
         document.addEventListener('click', function(e) {
             if (e.target.closest('.edit-company-btn')) {
                 const button = e.target.closest('.edit-company-btn');

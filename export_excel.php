@@ -147,7 +147,7 @@ $html_content .= '
 </body>
 </html>';
 
-// Setto i headers per il download del file excel
+// Setto gli headers per il download del file excel
 header('Content-Type: application/vnd.ms-excel');
 header('Content-Disposition: attachment; filename="Ore_Straordinarie_' . $current_month_name . '_' . $current_year . '.xls"');
 header('Cache-Control: max-age=0');
