@@ -7,6 +7,7 @@ $translations = [
         
         // Form labels
         'add_overtime' => 'Aggiungi Ore Straordinarie',
+        'required_fields' => '(*) Campi obbligatori',
         'company' => 'Azienda',
         'select_company' => 'Seleziona Azienda',
         'date' => 'Data',
@@ -67,6 +68,7 @@ $translations = [
         'page_title' => 'Overtime Hours Manager',
         
         // Form labels
+        'required_fields' => '(*) Required fields',
         'add_overtime' => 'Add Overtime Hours',
         'company' => 'Company',
         'select_company' => 'Select Company',

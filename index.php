@@ -247,8 +247,9 @@ function isColorDark($color) {
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card">
-                    <div class="card-header">
+                    <div class="card-header d-flex justify-content-between text-center">
                         <h5 class="mb-0"><i class="fas fa-plus"></i> <?= t('add_overtime', $current_lang) ?></h5>
+                        <h6><?= t('required_fields', $current_lang) ?></h6>
                     </div>
                     <div class="card-body">
                         <form method="POST" class="row g-3">
