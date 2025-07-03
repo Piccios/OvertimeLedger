@@ -4,14 +4,14 @@ require_once 'config.php';
 try {
     $pdo = getDBConnection();
     
-    // Check if color column exists
+    // Controllo se la colonna color esiste
     $stmt = $pdo->query("DESCRIBE companies");
     $columns = $stmt->fetchAll(PDO::FETCH_COLUMN);
     
     $hasColorColumn = in_array('color', $columns);
     
     if ($hasColorColumn) {
-        // Get all companies with their colors
+        // Recupero tutte le aziende con i loro colori
         $companies = $pdo->query("SELECT id, name, color, created_at FROM companies ORDER BY name")->fetchAll();
         echo "<h2>✅ Color column exists!</h2>";
         echo "<h3>Companies and their colors:</h3>";
@@ -50,5 +50,5 @@ try {
 ?>
 
 <br><br>
-<a href="manage_companies.php">→ Go to Company Management</a> | 
-<a href="index.php">→ Go to Main Page</a> 
+<a href="manage_companies.php">→ Vai alla gestione delle aziende</a> | 
+<a href="index.php">→ Vai alla pagina principale</a> 
