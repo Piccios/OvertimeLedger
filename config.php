@@ -1,5 +1,5 @@
 <?php
-// Database configuration
+// Configurazione del database
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'straordinari');
 define('DB_USER', 'root');  // Cambia questo con il tuo username MySQL
