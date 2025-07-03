@@ -269,10 +269,10 @@ function isColorDark($color) {
             background: rgba(255, 255, 255, 0.2);
             transform: translateY(-1px);
         }
-        .table {
-            color: white;
+
+        .table tr{
+            border-radius: 10px 10px 0 0;
         }
-        
         .table th {
             background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(15px);
@@ -280,7 +280,14 @@ function isColorDark($color) {
             color: white;
             font-weight: 600;
             padding: 1rem;
-            border-radius: 10px 10px 0 0;
+        }
+        
+        .table th:first-child {
+            border-top-left-radius: 10px;
+        }
+        
+        .table th:last-child {
+            border-top-right-radius: 10px;
         }
         
         .table td {
