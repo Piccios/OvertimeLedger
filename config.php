@@ -2,8 +2,8 @@
 // Database configuration
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'straordinari');
-define('DB_USER', 'root');  // Change this with your MySQL username
-define('DB_PASS', '');      // Change this with your MySQL password
+define('DB_USER', 'root');  
+define('DB_PASS', '');      
 
 // Creating database connection
 function getDBConnection() {
