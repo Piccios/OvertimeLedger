@@ -2,10 +2,10 @@
 // Database configuration
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'straordinari');
-define('DB_USER', 'root');  // Change this to your MySQL username
-define('DB_PASS', '');      // Change this to your MySQL password
+define('DB_USER', 'root');  // Cambia questo con il tuo username MySQL
+define('DB_PASS', '');      // Cambia questo con la tua password MySQL
 
-// Create database connection
+// Creazione della connessione al database
 function getDBConnection() {
     try {
         $pdo = new PDO(
