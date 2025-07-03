@@ -145,11 +145,11 @@ function isColorDark($color) {
                 <div class="d-flex justify-content-between align-items-center">
                     <h1 class="text-white mb-0">
                         <i class="fas fa-building me-3"></i>
-                        Gestione Aziende
+                        Manage Companies
                     </h1>
                     <a href="index.php" class="btn btn-outline-light">
                         <i class="fas fa-arrow-left me-2"></i>
-                        Torna al Menu Principale
+                        Back to Main Menu
                     </a>
                 </div>
             </div>
@@ -175,18 +175,18 @@ function isColorDark($color) {
                     <div class="card-header">
                         <h5 class="mb-0">
                             <i class="fas fa-plus"></i> 
-                            Aggiungi Nuova Azienda
+                            Add New Company
                         </h5>
                     </div>
                     <div class="card-body">
                         <form method="POST" class="row g-3">
                             <input type="hidden" name="action" value="add_company">
                             <div class="col-md-6">
-                                <label for="name" class="form-label">Nome Azienda</label>
+                                <label for="name" class="form-label">Company Name</label>
                                 <input type="text" name="name" id="name" class="form-control" required>
                             </div>
                             <div class="col-md-3">
-                                <label for="color" class="form-label">Colore</label>
+                                <label for="color" class="form-label">Color</label>
                                 <div class="input-group">
                                     <input type="color" name="color" id="color" class="form-control form-control-color" value="#6c757d" title="Scegli colore">
                                     <span class="input-group-text">
@@ -198,7 +198,7 @@ function isColorDark($color) {
                                 <label class="form-label">&nbsp;</label>
                                 <button type="submit" class="btn btn-primary w-100">
                                     <i class="fas fa-save me-2"></i>
-                                    Aggiungi
+                                    Add
                                 </button>
                             </div>
                         </form>
@@ -214,12 +214,12 @@ function isColorDark($color) {
                     <div class="card-header">
                         <h5 class="mb-0">
                             <i class="fas fa-list"></i> 
-                            Elenco Aziende (<?= count($companies) ?>)
+                            Companies List (<?= count($companies) ?>)
                         </h5>
                     </div>
                     <div class="card-body">
                         <?php if (empty($companies)): ?>
-                            <p class="text-muted text-center">Nessuna azienda presente nel sistema.</p>
+                            <p class="text-muted text-center">No companies present in the system.</p>
                         <?php else: ?>
                             <div class="row">
                                 <?php foreach ($companies as $company): ?>
@@ -245,7 +245,7 @@ function isColorDark($color) {
                                                         <input type="hidden" name="action" value="delete_company">
                                                         <input type="hidden" name="id" value="<?= $company['id'] ?>">
                                                         <button type="submit" class="btn btn-outline-danger btn-sm" 
-                                                                onclick="return confirm('Sei sicuro di voler eliminare questa azienda?')">
+                                                                onclick="return confirm('Are you sure you want to delete this company?')">
                                                             <i class="fas fa-trash"></i>
                                                         </button>
                                                     </form>
@@ -268,7 +268,7 @@ function isColorDark($color) {
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="editCompanyModalLabel">
-                        <i class="fas fa-edit"></i> Modifica Azienda
+                        <i class="fas fa-edit"></i> Edit Company
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
@@ -277,11 +277,11 @@ function isColorDark($color) {
                         <input type="hidden" name="action" value="edit_company">
                         <input type="hidden" name="id" id="edit_company_id">
                         <div class="mb-3">
-                            <label for="edit_company_name" class="form-label">Nome Azienda</label>
+                            <label for="edit_company_name" class="form-label">Company Name</label>
                             <input type="text" name="name" id="edit_company_name" class="form-control" required>
                         </div>
                         <div class="mb-3">
-                            <label for="edit_company_color" class="form-label">Colore</label>
+                            <label for="edit_company_color" class="form-label">Color</label>
                             <div class="input-group">
                                 <input type="color" name="color" id="edit_company_color" class="form-control form-control-color" title="Scegli colore">
                                 <span class="input-group-text">
@@ -291,9 +291,9 @@ function isColorDark($color) {
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annulla</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Salva Modifiche
+                            <i class="fas fa-save"></i> Save
                         </button>
                     </div>
                 </form>
@@ -313,7 +313,7 @@ function isColorDark($color) {
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
             <div class="toast-body">
-                Azienda aggiunta con successo!
+                Company added successfully!
             </div>
         </div>
     </div>
@@ -328,7 +328,7 @@ function isColorDark($color) {
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
             <div class="toast-body">
-                Azienda modificata con successo!
+                Company modified successfully!
             </div>
         </div>
     </div>
@@ -343,7 +343,7 @@ function isColorDark($color) {
                 <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
             </div>
             <div class="toast-body">
-                Azienda eliminata con successo!
+                Company deleted successfully!
             </div>
         </div>
     </div>
