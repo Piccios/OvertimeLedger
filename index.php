@@ -1,5 +1,6 @@
 <?php
 require_once 'config.php';
+require_once 'translations.php';
 
 $pdo = getDBConnection();
 
@@ -201,6 +202,44 @@ function isColorDark($color) {
 </head>
 <body>
     <div class="container py-5">
+        
+        <div class="row">
+            <div class="col-12">
+                <h1 class="text-white text-center mb-4">
+                    <i class="fas fa-clock"></i> OvertimeLedger
+                </h1>
+                
+                <!-- Language Switcher -->
+                <div class="d-flex justify-content-center mb-4">
+                    <div class="card bg-white bg-opacity-10 border-0">
+                        <div class="card-body p-3">
+                            <div class="row align-items-center">
+                                <div class="col-auto">
+                                    <span class="text-white fw-bold">
+                                        <i class="fas fa-language me-2"></i>
+                                        <?= t('language', $current_lang) ?>:
+                                    </span>
+                                </div>
+                                <div class="col-auto">
+                                    <div class="btn-group" role="group">
+                                        <input type="radio" class="btn-check" name="language" id="lang_it" value="it" <?= $current_lang === 'it' ? 'checked' : '' ?>>
+                                        <label class="btn btn-outline-light btn-sm" for="lang_it">
+                                            🇮🇹 <?= t('italian', $current_lang) ?>
+                                        </label>
+                                        
+                                        <input type="radio" class="btn-check" name="language" id="lang_en" value="en" <?= $current_lang === 'en' ? 'checked' : '' ?>>
+                                        <label class="btn btn-outline-light btn-sm" for="lang_en">
+                                            🇺🇸 <?= t('english', $current_lang) ?>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
         <!-- Link per la gestione delle aziende -->
         <div class="row mb-3">
             <div class="col-12">
@@ -210,45 +249,37 @@ function isColorDark($color) {
                 </a>
             </div>
         </div>
-        
-        <div class="row">
-            <div class="col-12">
-                <h1 class="text-white text-center mb-5">
-                    <i class="fas fa-clock"></i> OvertimeLedger
-                </h1>
-            </div>
-        </div>
 
         <!-- Form per l'aggiunta di nuove voci -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-plus"></i> Add Extra Hours</h5>
+                        <h5 class="mb-0"><i class="fas fa-plus"></i> <?= t('add_overtime', $current_lang) ?></h5>
                     </div>
                     <div class="card-body">
                         <form method="POST" class="row g-3">
                             <input type="hidden" name="action" value="add">
                             <div class="col-md-3">
-                                <label for="company_id" class="form-label">Company</label>
+                                <label for="company_id" class="form-label"><?= t('company', $current_lang) ?> *</label>
                                 <select name="company_id" id="company_id" class="form-select" required>
-                                    <option value="">Select Company *</option>
+                                    <option value=""><?= t('select_company', $current_lang) ?></option>
                                     <?php foreach ($companies as $company): ?>
                                         <option value="<?= $company['id'] ?>"><?= htmlspecialchars($company['name']) ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
                             <div class="col-md-3">
-                                <label for="date" class="form-label">Date *</label>
+                                <label for="date" class="form-label"><?= t('date', $current_lang) ?> *</label>
                                 <input type="date" name="date" id="date" class="form-control" value="<?= date('Y-m-d') ?>" required>
                             </div>
                             <div class="col-md-2">
-                                <label for="hours" class="form-label">Hours *</label>
+                                <label for="hours" class="form-label"><?= t('hours', $current_lang) ?> *</label>
                                 <input type="number" name="hours" id="hours" class="form-control" step="0.5" min="0" placeholder="2.5" required>
                             </div>
                             <div class="col-md-3">
-                                <label for="description" class="form-label">Description</label>
-                                <input type="text" name="description" id="description" class="form-control" placeholder="Optional">
+                                <label for="description" class="form-label"><?= t('description', $current_lang) ?></label>
+                                <input type="text" name="description" id="description" class="form-control" placeholder="<?= t('optional', $current_lang) ?>">
                             </div>
                             <div class="col-md-1">
                                 <label class="form-label">&nbsp;</label>
@@ -269,22 +300,22 @@ function isColorDark($color) {
                     <div class="card-header">
                         <h5 class="mb-0">
                             <i class="fas fa-calendar-week"></i> 
-                            Current Week (<?= date('d', strtotime($current_week_start)) ?> <?= $italian_months[date('F', strtotime($current_week_start))] ?> - <?= date('d', strtotime($current_week_end)) ?> <?= $italian_months[date('F', strtotime($current_week_end))] ?>)
+                            <?= t('current_week', $current_lang) ?> (<?= date('d', strtotime($current_week_start)) ?> <?= $italian_months[date('F', strtotime($current_week_start))] ?> - <?= date('d', strtotime($current_week_end)) ?> <?= $italian_months[date('F', strtotime($current_week_end))] ?>)
                         </h5>
                     </div>
                     <div class="card-body">
                         <?php if (empty($week_data)): ?>
-                            <p class="text-muted text-center">No overtime registered for this week.</p>
+                            <p class="text-muted text-center"><?= t('no_overtime_week', $current_lang) ?></p>
                         <?php else: ?>
                             <div class="table-responsive">
                                 <table class="table table-hover">
                                     <thead>
                                         <tr>
-                                            <th>Date</th>
-                                            <th>Company</th>
-                                            <th>Hours</th>
-                                            <th>Description</th>
-                                            <th>Actions</th>
+                                            <th><?= t('date', $current_lang) ?></th>
+                                            <th><?= t('company', $current_lang) ?></th>
+                                            <th><?= t('hours', $current_lang) ?></th>
+                                            <th><?= t('description', $current_lang) ?></th>
+                                            <th><?= t('actions', $current_lang) ?></th>
                                         </tr>
                                     </thead>
                                     <tbody>

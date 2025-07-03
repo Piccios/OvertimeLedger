@@ -45,7 +45,22 @@ $translations = [
         // Language selector
         'language' => 'Lingua',
         'italian' => 'Italiano',
-        'english' => 'Inglese'
+        'english' => 'Inglese',
+        
+        // Additional keys
+        'manage_companies' => 'Gestione Aziende',
+        'add_new_company' => 'Aggiungi Nuova Azienda',
+        'company_name' => 'Nome Azienda',
+        'color' => 'Colore',
+        'add' => 'Aggiungi',
+        'companies_list' => 'Elenco Aziende',
+        'no_companies' => 'Nessuna azienda presente nel sistema.',
+        'edit_company' => 'Modifica Azienda',
+        'back_to_main' => 'Torna al Menu Principale',
+        'confirm_delete_company' => 'Sei sicuro di voler eliminare questa azienda?',
+        'company_added' => 'Azienda aggiunta con successo!',
+        'company_modified' => 'Azienda modificata con successo!',
+        'company_deleted' => 'Azienda eliminata con successo!'
     ],
     'en' => [
         // Page title
@@ -91,7 +106,22 @@ $translations = [
         // Language selector
         'language' => 'Language',
         'italian' => 'Italian',
-        'english' => 'English'
+        'english' => 'English',
+        
+        // Additional keys
+        'manage_companies' => 'Manage Companies',
+        'add_new_company' => 'Add New Company',
+        'company_name' => 'Company Name',
+        'color' => 'Color',
+        'add' => 'Add',
+        'companies_list' => 'Companies List',
+        'no_companies' => 'No companies present in the system.',
+        'edit_company' => 'Edit Company',
+        'back_to_main' => 'Back to Main Menu',
+        'confirm_delete_company' => 'Are you sure you want to delete this company?',
+        'company_added' => 'Company added successfully!',
+        'company_modified' => 'Company modified successfully!',
+        'company_deleted' => 'Company deleted successfully!'
     ]
 ];
 
