@@ -127,10 +127,31 @@ function isColorDark($color) {
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+        :root {
+            --animation-duration: 15s;
+            --animation-duration-slow: 25s;
+            --transition-fast: 0.2s;
+            --transition-normal: 0.3s;
+        }
+
+        /* Respect user's motion preferences */
+        @media (prefers-reduced-motion: reduce) {
+            :root {
+                --animation-duration: 60s;
+                --animation-duration-slow: 80s;
+                --transition-fast: 0.1s;
+                --transition-normal: 0.15s;
+            }
+            
+            .shape {
+                animation: none !important;
+            }
+        }
+
         body {
             background: linear-gradient(-45deg, #667eea, #764ba2, #667eea, #764ba2);
             background-size: 400% 400%;
-            animation: gradientShift 15s ease infinite;
+            animation: gradientShift var(--animation-duration) ease infinite;
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
@@ -165,7 +186,7 @@ function isColorDark($color) {
             z-index: -1;
         }
         
-        /* Floating geometric shapes */
+        /* Floating geometric shapes - Optimized */
         .floating-shapes {
             position: fixed;
             top: 0;
@@ -174,14 +195,16 @@ function isColorDark($color) {
             height: 100%;
             pointer-events: none;
             z-index: -1;
+            will-change: transform;
         }
         
         .shape {
             position: absolute;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.08);
             border-radius: 50%;
-            animation: float 20s infinite linear;
+            animation: float var(--animation-duration-slow) infinite linear;
+            will-change: transform;
+            transform: translateZ(0); /* Force hardware acceleration */
         }
         
         .shape:nth-child(1) {
@@ -231,12 +254,13 @@ function isColorDark($color) {
         .card {
             border: none;
             border-radius: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.12);
             border: 1px solid rgba(255, 255, 255, 0.2);
             box-shadow: 
                 0 8px 32px 0 rgba(31, 38, 135, 0.2),
                 inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            will-change: transform;
+            transform: translateZ(0);
         }
         .card-header {
             background: rgba(255, 255, 255, 0.15);
@@ -301,13 +325,13 @@ function isColorDark($color) {
         
         .table tbody tr {
             border-radius: 10px;
-            transition: all 0.3s ease;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+            will-change: transform;
         }
         
         .table tbody tr:hover {
             background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-1px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px) translateZ(0);
         }
         
         .table tbody tr:hover td {
@@ -315,12 +339,12 @@ function isColorDark($color) {
         }
         
         .form-control, .form-select {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
+            background: rgba(255, 255, 255, 0.12);
             border: 1px solid rgba(255, 255, 255, 0.2);
             border-radius: 10px;
             color: white;
-            transition: all 0.3s ease;
+            transition: border-color 0.2s ease, background-color 0.2s ease;
+            will-change: auto;
         }
         
         .form-control:focus, .form-select:focus {
@@ -498,7 +522,7 @@ function isColorDark($color) {
                                 <div class="col-auto">
                                     <div class="btn-group" role="group">
                                         <input type="radio" class="btn-check" name="language" id="lang_it" value="it" <?= $current_lang === 'it' ? 'checked' : '' ?>>
-                                        <label class="btn btn-outline-light btn-sm" for="lang_it">
+                                        <label class="btn btn-outline-light btn-sm me-1" for="lang_it">
                                             🇮🇹 <?= t('italian', $current_lang) ?>
                                         </label>
                                         <input type="radio" class="btn-check" name="language" id="lang_en" value="en" <?= $current_lang === 'en' ? 'checked' : '' ?>>
@@ -871,6 +895,18 @@ function isColorDark($color) {
     </style>
 
     <script>
+        // Performance optimizations
+        (function() {
+            // Reduce animation on low-end devices
+            const isLowEndDevice = navigator.hardwareConcurrency <= 4 || 
+                                  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            
+            if (isLowEndDevice) {
+                document.documentElement.style.setProperty('--animation-duration', '40s');
+                document.querySelector('.floating-shapes')?.remove();
+            }
+        })();
+
         // Hide notification after 4 seconds and clean URL
         document.addEventListener('DOMContentLoaded', function() {
             const toasts = ['successToast', 'deleteToast', 'editToast'];
@@ -923,16 +959,21 @@ function isColorDark($color) {
             }
         });
 
-        // Language switching functionality
+        // Language switching functionality with debouncing
         document.addEventListener('DOMContentLoaded', function() {
             const languageRadios = document.querySelectorAll('input[name="language"]');
+            let timeoutId;
             
             languageRadios.forEach(function(radio) {
                 radio.addEventListener('change', function() {
+                    clearTimeout(timeoutId);
                     const selectedLang = this.value;
-                    const currentUrl = new URL(window.location);
-                    currentUrl.searchParams.set('lang', selectedLang);
-                    window.location.href = currentUrl.toString();
+                    
+                    timeoutId = setTimeout(function() {
+                        const currentUrl = new URL(window.location);
+                        currentUrl.searchParams.set('lang', selectedLang);
+                        window.location.href = currentUrl.toString();
+                    }, 150); // Debounce 150ms
                 });
             });
         });
