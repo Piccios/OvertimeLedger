@@ -128,649 +128,632 @@ function isColorDark($color) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --animation-duration: 15s;
-            --animation-duration-slow: 25s;
-            --transition-fast: 0.2s;
-            --transition-normal: 0.3s;
+            --primary-pastel: #f8b5d3;
+            --secondary-pastel: #b8e6b8;
+            --accent-pastel: #ffd6a5;
+            --light-pastel: #f0f8ff;
+            --dark-text: #2c3e50;
+            --shadow-soft: rgba(0, 0, 0, 0.1);
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Respect user's motion preferences */
-        @media (prefers-reduced-motion: reduce) {
-            :root {
-                --animation-duration: 60s;
-                --animation-duration-slow: 80s;
-                --transition-fast: 0.1s;
-                --transition-normal: 0.15s;
+        /* Scroll animations */
+        @media (prefers-reduced-motion: no-preference) {
+            .fade-in-up {
+                opacity: 0;
+                transform: translateY(30px);
+                transition: var(--transition-smooth);
             }
             
-            .shape {
-                animation: none !important;
+            .fade-in-up.animate {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            
+            .slide-in-left {
+                opacity: 0;
+                transform: translateX(-30px);
+                transition: var(--transition-smooth);
+            }
+            
+            .slide-in-left.animate {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            
+            .scale-in {
+                opacity: 0;
+                transform: scale(0.9);
+                transition: var(--transition-smooth);
+            }
+            
+            .scale-in.animate {
+                opacity: 1;
+                transform: scale(1);
             }
         }
 
         body {
-            background: linear-gradient(-45deg, #667eea, #764ba2, #667eea, #764ba2);
-            background-size: 400% 400%;
-            animation: gradientShift var(--animation-duration) ease infinite;
+            background: var(--light-pastel);
             min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
-        }
-        
-        /* Animated gradient background */
-        @keyframes gradientShift {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-        
-        /* Geometric background elements */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: -1;
-        }
-        
-        /* Floating geometric shapes - Optimized */
-        .floating-shapes {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-            will-change: transform;
-        }
-        
-        .shape {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 50%;
-            animation: float var(--animation-duration-slow) infinite linear;
-            will-change: transform;
-            transform: translateZ(0); /* Force hardware acceleration */
-        }
-        
-        .shape:nth-child(1) {
-            width: 80px;
-            height: 80px;
-            top: 10%;
-            left: 10%;
-            animation-delay: 0s;
-        }
-        
-        .shape:nth-child(2) {
-            width: 120px;
-            height: 120px;
-            top: 60%;
-            left: 80%;
-            animation-delay: -5s;
-            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-        }
-        
-        .shape:nth-child(3) {
-            width: 60px;
-            height: 60px;
-            top: 80%;
-            left: 20%;
-            animation-delay: -10s;
-        }
-        
-        .shape:nth-child(4) {
-            width: 100px;
-            height: 100px;
-            top: 20%;
-            left: 70%;
-            animation-delay: -15s;
-            border-radius: 63% 37% 54% 46% / 55% 48% 52% 45%;
-        }
-        
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0px) rotate(0deg);
-                opacity: 0.5;
-            }
-            50% {
-                transform: translateY(-20px) rotate(180deg);
-                opacity: 0.8;
-            }
-        }
-        .card {
-            border: none;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 
-                0 8px 32px 0 rgba(31, 38, 135, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.4);
-            will-change: transform;
-            transform: translateZ(0);
-        }
-        .card-header {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
-            color: white;
-            border-radius: 20px 20px 0 0 !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 10px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 15px 0 rgba(102, 126, 234, 0.3);
-            transition: all 0.3s ease;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px 0 rgba(102, 126, 234, 0.4);
-        }
-        
-        .btn-outline-light {
-            border-radius: 10px;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-        
-        .btn-outline-light:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-1px);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark-text);
+            line-height: 1.6;
         }
 
-        .table tr{
-            border-radius: 10px 10px 0 0;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
         }
-        .table th {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
+
+        .card {
+            background: white;
             border: none;
-            color: white;
+            border-radius: 24px;
+            box-shadow: 
+                0 4px 6px var(--shadow-soft),
+                0 10px 15px rgba(0, 0, 0, 0.05);
+            transition: var(--transition-smooth);
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 
+                0 8px 12px var(--shadow-soft),
+                0 20px 30px rgba(0, 0, 0, 0.08);
+        }
+
+        .card-header {
+            background: var(--primary-pastel);
+            color: var(--dark-text);
+            border: none;
+            padding: 1.5rem;
             font-weight: 600;
-            padding: 1rem;
+            font-size: 1.1rem;
         }
-        
-        .table th:first-child {
-            border-top-left-radius: 10px;
+
+        .card-body {
+            padding: 2rem;
         }
-        
-        .table th:last-child {
-            border-top-right-radius: 10px;
-        }
-        
-        .table td {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
+
+        .btn-primary {
+            background: var(--primary-pastel);
             border: none;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            color: white;
-            padding: 1rem;
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+            color: var(--dark-text);
         }
-        
-        .table tbody tr {
-            border-radius: 10px;
-            transition: background-color 0.2s ease, transform 0.2s ease;
-            will-change: transform;
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(248, 181, 211, 0.4);
+            color: var(--dark-text);
         }
-        
-        .table tbody tr:hover {
-            background: rgba(255, 255, 255, 0.1);
-            transform: translateY(-1px) translateZ(0);
-        }
-        
-        .table tbody tr:hover td {
+
+        .btn-outline-secondary {
+            border: 2px solid var(--accent-pastel);
+            color: var(--dark-text);
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            transition: var(--transition-smooth);
             background: transparent;
         }
-        
+
+        .btn-outline-secondary:hover {
+            background: var(--accent-pastel);
+            transform: translateY(-1px);
+            color: var(--dark-text);
+        }
+
         .form-control, .form-select {
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            color: white;
-            transition: border-color 0.2s ease, background-color 0.2s ease;
-            will-change: auto;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            transition: var(--transition-smooth);
+            background: white;
+            color: var(--dark-text);
         }
-        
+
         .form-control:focus, .form-select:focus {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.1);
-            color: white;
+            border-color: var(--primary-pastel);
+            box-shadow: 0 0 0 0.2rem rgba(248, 181, 211, 0.25);
+            outline: none;
         }
-        
-        .form-control::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-        
+
         .form-label {
-            color: white;
-            font-weight: 500;
+            color: var(--dark-text);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
         }
-        
-        /* Fix dropdown options */
-        .form-select option {
-            background: #fff;
-            color: #333;
-            padding: 0.5rem;
+
+        .table {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px var(--shadow-soft);
         }
-        
-        
-        
-        .badge {
-            font-size: 0.8em;
-        }
-        .company-badge {
-            font-size: 0.7em;
-            padding: 0.3em 0.6em;
-        }
-        
-        /* Colori specifici per le aziende */
-        .badge-defenda {
-            background-color: #1e3a8a !important;
-            color: white !important;
-        }
-        
-        .badge-euroansa {
-            background-color: #3b82f6 !important;
-            color: white !important;
-        }
-        
-        .badge-ilv {
-            background-color: #f59e0b !important;
-            color: white !important;
-        }
-        
-        /* Colori specifici per il testo delle aziende */
-        .text-defenda {
-            color: #1e3a8a !important;
-        }
-        
-        .text-euroansa {
-            color: #3b82f6 !important;
-        }
-        
-        .text-ilv {
-            color: #f59e0b !important;
-        }
-        
-        /* Bordi specifici per le aziende */
-        .border-defenda {
-            border-color: #1e3a8a !important;
-        }
-        
-        .border-euroansa {
-            border-color: #3b82f6 !important;
-        }
-        
-        .border-ilv {
-            border-color: #f59e0b !important;
-        }
-        
-        /* Modern enhancements */
-        .company-card {
-            transition: all 0.3s ease;
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        .company-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            background: rgba(255, 255, 255, 0.15);
-        }
-        
-        .modal-content {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
+
+        .table th {
+            background: var(--secondary-pastel);
+            color: var(--dark-text);
+            font-weight: 600;
             border: none;
-            border-radius: 20px;
+            padding: 1rem;
         }
-        
-        .modal-header {
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-            border-radius: 20px 20px 0 0;
+
+        .table td {
+            background: white;
+            border: none;
+            border-bottom: 1px solid #f8f9fa;
+            padding: 1rem;
+            transition: var(--transition-smooth);
         }
-        
-        .modal-footer {
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
+
+        .table tbody tr:hover {
+            background: #f8f9fa;
+            transform: scale(1.01);
+        }
+
+        .badge {
+            border-radius: 8px;
+            font-weight: 500;
+            padding: 0.5rem 0.75rem;
+        }
+
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 10px var(--shadow-soft);
             border-radius: 0 0 20px 20px;
         }
-        
-        /* Modal form controls - different styling for light background */
-        .modal .form-control, .modal .form-select {
-            background: rgba(0, 0, 0, 0.05);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            color: #333;
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--dark-text) !important;
         }
-        
-        .modal .form-control:focus, .modal .form-select:focus {
-            background: rgba(0, 0, 0, 0.08);
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-            color: #333;
-        }
-        
-        .modal .form-control::placeholder {
-            color: rgba(0, 0, 0, 0.5);
-        }
-        
-        .modal .form-label {
-            color: #333;
+
+        .language-selector {
+            background: var(--accent-pastel);
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            color: var(--dark-text);
             font-weight: 500;
         }
-        
-        /* Modal dropdown styling */
-        .modal .form-select option {
-            background: #fff;
-            color: #333;
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-    
-        
-        .text-muted {
-            color: rgba(255, 255, 255, 0.8) !important;
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
         }
-        
-        /* Enhanced language switcher */
-        .btn-check:checked + .btn-outline-light {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
-            color: white;
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-pastel);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #f4a6c7;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .card-body {
+                padding: 1.5rem;
+            }
+        }
+
+        /* Company badge styles */
+        .company-badge {
+            font-size: 0.8em;
+            padding: 0.4em 0.8em;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+        }
+
+        .company-badge:hover {
             transform: scale(1.05);
+        }
+
+        /* Modal styles */
+        .modal-content {
+            background: white;
+            border: none;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px var(--shadow-soft);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid #f8f9fa;
+            border-radius: 24px 24px 0 0;
+            background: var(--light-pastel);
+        }
+
+        .modal-footer {
+            border-top: 1px solid #f8f9fa;
+            border-radius: 0 0 24px 24px;
+        }
+
+        /* Toast notifications */
+        .toast {
+            background: white;
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px var(--shadow-soft);
+        }
+
+        .toast-header {
+            background: var(--light-pastel);
+            border-bottom: 1px solid #f8f9fa;
+            border-radius: 16px 16px 0 0;
+        }
+
+        /* Summary cards */
+        .summary-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: var(--transition-smooth);
+            box-shadow: 0 2px 8px var(--shadow-soft);
+        }
+
+        .summary-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow-soft);
+        }
+
+        .summary-card h5 {
+            color: var(--dark-text);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .summary-card p {
+            color: var(--dark-text);
+            opacity: 0.8;
+            margin-bottom: 0;
+        }
+
+        /* Export button */
+        .btn-export {
+            background: var(--secondary-pastel);
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+            color: var(--dark-text);
+        }
+
+        .btn-export:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(184, 230, 184, 0.4);
+            color: var(--dark-text);
+        }
+
+        /* Loading animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--primary-pastel);
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Accessibility improvements */
+        .btn:focus, .form-control:focus, .form-select:focus {
+            outline: 2px solid var(--primary-pastel);
+            outline-offset: 2px;
+        }
+
+        /* Print styles */
+        @media print {
+            .btn, .language-selector {
+                display: none !important;
+            }
+            
+            .card {
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Floating geometric shapes -->
-    <div class="floating-shapes">
-        <div class="shape"></div>
-        <div class="shape"></div>
-        <div class="shape"></div>
-        <div class="shape"></div>
-    </div>
-    
-    <div class="container py-5">
-        
-        <div class="row">
-            <div class="col-12">
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.php">
+                <i class="fas fa-clock me-2"></i>
+                <?= t('page_title', $current_lang) ?>
+            </a>
+            
+            <div class="d-flex align-items-center">
+                <a href="manage_companies.php" class="btn btn-outline-secondary me-3">
+                    <i class="fas fa-building me-1"></i>
+                    <?= t('manage_companies', $current_lang) ?>
+                </a>
                 
-                <h1 class="text-white text-center mb-4">
-                    <i class="fas fa-clock"></i> OvertimeLedger
-                </h1>
-                <!-- Language Switcher -->
-                <div class="d-flex justify-content-end mb-4">
-                    <div class="card bg-white bg-opacity-10 border-0">
-                        <div class="card-body">
-                            <div class="row align-items-center">
-                                <div class="col-auto">
-                                    <div class="btn-group" role="group">
-                                        <input type="radio" class="btn-check" name="language" id="lang_it" value="it" <?= $current_lang === 'it' ? 'checked' : '' ?>>
-                                        <label class="btn btn-outline-light btn-sm me-1" for="lang_it">
-                                            🇮🇹 <?= t('italian', $current_lang) ?>
-                                        </label>
-                                        <input type="radio" class="btn-check" name="language" id="lang_en" value="en" <?= $current_lang === 'en' ? 'checked' : '' ?>>
-                                        <label class="btn btn-outline-light btn-sm" for="lang_en">
-                                            🇺🇸 <?= t('english', $current_lang) ?>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
+                <div class="dropdown">
+                    <button class="btn language-selector dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-globe me-1"></i>
+                        <?= $current_lang === 'it' ? '🇮🇹' : '🇺🇸' ?>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="?lang=it">🇮🇹 <?= t('italian', $current_lang) ?></a></li>
+                        <li><a class="dropdown-item" href="?lang=en">🇺🇸 <?= t('english', $current_lang) ?></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Success/Error Messages -->
+        <?php if (isset($_GET['success'])): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                <?= t('record_added', $current_lang) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
+        <?php if (isset($_GET['deleted'])): ?>
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <i class="fas fa-trash me-2"></i>
+                <?= t('record_deleted', $current_lang) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
+        <?php if (isset($_GET['edited'])): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-edit me-2"></i>
+                <?= t('record_edited', $current_lang) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
+        <!-- Add Overtime Form -->
+        <div class="card fade-in-up mb-4">
+            <div class="card-header">
+                <i class="fas fa-plus me-2"></i>
+                <?= t('add_overtime', $current_lang) ?>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="">
+                    <input type="hidden" name="action" value="add">
+                    
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <label for="company_id" class="form-label">
+                                <?= t('company', $current_lang) ?> *
+                            </label>
+                            <select name="company_id" id="company_id" class="form-select" required>
+                                <option value=""><?= t('select_company', $current_lang) ?></option>
+                                <?php foreach ($companies as $company): ?>
+                                    <option value="<?= $company['id'] ?>"><?= htmlspecialchars($company['name']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <label for="date" class="form-label">
+                                <?= t('date', $current_lang) ?> *
+                            </label>
+                            <input type="date" name="date" id="date" class="form-control" required>
+                        </div>
+                        
+                        <div class="col-md-2 mb-3">
+                            <label for="hours" class="form-label">
+                                <?= t('hours', $current_lang) ?> *
+                            </label>
+                            <input type="number" name="hours" id="hours" class="form-control" step="0.5" min="0" required>
+                        </div>
+                        
+                        <div class="col-md-3 mb-3">
+                            <label for="description" class="form-label">
+                                <?= t('description', $current_lang) ?> (<?= t('optional', $current_lang) ?>)
+                            </label>
+                            <input type="text" name="description" id="description" class="form-control">
+                        </div>
+                        
+                        <div class="col-md-1 mb-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-save"></i>
+                            </button>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Link per la gestione delle aziende -->
-        <div class="row mb-3">
-            <div class="col-12">
-                <a href="manage_companies.php" class="btn btn-outline-light">
-                    <i class="fas fa-building me-2"></i>
-                    Company Management
-                </a>
+                </form>
             </div>
         </div>
 
-        <!-- Form per l'aggiunta di nuove voci -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header d-flex justify-content-between text-center">
-                        <h5 class="mb-0"><i class="fas fa-plus"></i> <?= t('add_overtime', $current_lang) ?></h5>
-                        <h6><?= t('required_fields', $current_lang) ?></h6>
+        <!-- Current Week Section -->
+        <div class="card slide-in-left mb-4">
+            <div class="card-header">
+                <i class="fas fa-calendar-week me-2"></i>
+                <?= t('current_week', $current_lang) ?>
+            </div>
+            <div class="card-body">
+                <?php if (empty($week_data)): ?>
+                    <p class="text-muted mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <?= t('no_overtime_week', $current_lang) ?>
+                    </p>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th><?= t('company', $current_lang) ?></th>
+                                    <th><?= t('date', $current_lang) ?></th>
+                                    <th><?= t('hours', $current_lang) ?></th>
+                                    <th><?= t('description', $current_lang) ?></th>
+                                    <th><?= t('actions', $current_lang) ?></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach ($week_data as $record): ?>
+                                    <tr>
+                                        <td>
+                                            <span class="badge company-badge" style="<?= getCompanyBadgeStyle($company_colors[$record['company_id']]) ?>">
+                                                <?= htmlspecialchars($record['company_name']) ?>
+                                            </span>
+                                        </td>
+                                        <td><?= date('d/m/Y', strtotime($record['date'])) ?></td>
+                                        <td><strong><?= $record['hours'] ?></strong></td>
+                                        <td><?= htmlspecialchars($record['description'] ?? '') ?></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-secondary me-1" onclick="editRecord(<?= $record['id'] ?>, '<?= $record['company_id'] ?>', '<?= $record['date'] ?>', <?= $record['hours'] ?>, '<?= htmlspecialchars($record['description'] ?? '') ?>')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-secondary" onclick="deleteRecord(<?= $record['id'] ?>)">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="card-body">
-                        <form method="POST" class="row g-3">
-                            <input type="hidden" name="action" value="add">
-                            <div class="col-md-3">
-                                <label for="company_id" class="form-label"><?= t('company', $current_lang) ?> *</label>
-                                <select name="company_id" id="company_id" class="form-select" required>
-                                    <option value=""><?= t('select_company', $current_lang) ?></option>
-                                    <?php foreach ($companies as $company): ?>
-                                        <option value="<?= $company['id'] ?>"><?= htmlspecialchars($company['name']) ?></option>
-                                    <?php endforeach; ?>
-                                </select>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="date" class="form-label"><?= t('date', $current_lang) ?> *</label>
-                                <input type="date" name="date" id="date" class="form-control" value="<?= date('Y-m-d') ?>" required>
-                            </div>
-                            <div class="col-md-2">
-                                <label for="hours" class="form-label"><?= t('hours', $current_lang) ?> *</label>
-                                <input type="number" name="hours" id="hours" class="form-control" step="0.5" min="0" placeholder="2.5" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="description" class="form-label"><?= t('description', $current_lang) ?></label>
-                                <input type="text" name="description" id="description" class="form-control" placeholder="<?= t('optional', $current_lang) ?>">
-                            </div>
-                            <div class="col-md-1">
-                                <label class="form-label">&nbsp;</label>
-                                <button type="submit" class="btn btn-primary w-100">
-                                    <i class="fas fa-save"></i>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                <?php endif; ?>
             </div>
         </div>
 
-        <!-- Riepilogo della settimana corrente -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">
-                            <i class="fas fa-calendar-week"></i> 
-                            <?= t('current_week', $current_lang) ?> (<?= date('d', strtotime($current_week_start)) ?> <?= $italian_months[date('F', strtotime($current_week_start))] ?> - <?= date('d', strtotime($current_week_end)) ?> <?= $italian_months[date('F', strtotime($current_week_end))] ?>)
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <?php if (empty($week_data)): ?>
-                            <p class="text-muted text-center"><?= t('no_overtime_week', $current_lang) ?></p>
-                        <?php else: ?>
+        <!-- Monthly Summary -->
+        <div class="card scale-in mb-4">
+            <div class="card-header">
+                <i class="fas fa-chart-bar me-2"></i>
+                <?= t('monthly_summary', $current_lang) ?> - <?= $current_month_name ?>
+            </div>
+            <div class="card-body">
+                <?php if (empty($monthly_summary)): ?>
+                    <p class="text-muted mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <?= t('no_data_month', $current_lang) ?>
+                    </p>
+                <?php else: ?>
+                    <div class="row">
+                        <div class="col-md-8">
                             <div class="table-responsive">
-                                <table class="table table-hover">
+                                <table class="table">
                                     <thead>
                                         <tr>
-                                            <th><?= t('date', $current_lang) ?></th>
                                             <th><?= t('company', $current_lang) ?></th>
-                                            <th><?= t('hours', $current_lang) ?></th>
-                                            <th><?= t('description', $current_lang) ?></th>
-                                            <th><?= t('actions', $current_lang) ?></th>
+                                            <th><?= t('total_monthly_hours', $current_lang) ?></th>
+                                            <th><?= t('summary_by_company', $current_lang) ?></th>
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <?php foreach ($week_data as $record): ?>
+                                        <?php 
+                                        $total_hours = array_sum(array_column($monthly_summary, 'total_hours'));
+                                        foreach ($monthly_summary as $summary): 
+                                            $percentage = $total_hours > 0 ? round(($summary['total_hours'] / $total_hours) * 100, 1) : 0;
+                                        ?>
                                             <tr>
                                                 <td>
-                                                    <strong><?= $italian_days[date('D', strtotime($record['date']))] ?>, <?= date('d', strtotime($record['date'])) ?> <?= $italian_months[date('F', strtotime($record['date']))] ?></strong>
-                                                </td>
-                                                <td>
-                                                    <?php 
-                                                    $company_color = $company_colors[$record['company_id']] ?? '#6c757d';
-                                                    ?>
-                                                    <span class="badge company-badge" style="<?= getCompanyBadgeStyle($company_color) ?>">
-                                                        <?= htmlspecialchars($record['company_name']) ?>
+                                                    <span class="badge company-badge" style="<?= getCompanyBadgeStyle($summary['company_color']) ?>">
+                                                        <?= htmlspecialchars($summary['company_name']) ?>
                                                     </span>
                                                 </td>
-                                                <td>
-                                                    <span class="badge bg-success">
-                                                        <?= $record['hours'] ?>h
-                                                    </span>
-                                                </td>
-                                                <td><?= htmlspecialchars($record['description'] ?: '-') ?></td>
-                                                <td>
-                                                    <button type="button" class="btn btn-sm btn-primary me-1 edit-btn" 
-                                                            data-id="<?= $record['id'] ?>"
-                                                            data-company-id="<?= $record['company_id'] ?>"
-                                                            data-company="<?= htmlspecialchars($record['company_name']) ?>"
-                                                            data-date="<?= $record['date'] ?>"
-                                                            data-hours="<?= $record['hours'] ?>"
-                                                            data-description="<?= htmlspecialchars($record['description'] ?? '') ?>">
-                                                        <i class="fas fa-edit"></i>
-                                                    </button>
-                                                    <form method="POST" style="display: inline;">
-                                                        <input type="hidden" name="action" value="delete">
-                                                        <input type="hidden" name="id" value="<?= $record['id'] ?>">
-                                                        <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Sei sicuro?')">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    </form>
-                                                </td>
+                                                <td><strong><?= $summary['total_hours'] ?></strong></td>
+                                                <td><?= $percentage ?>% <?= t('of_total', $current_lang) ?></td>
                                             </tr>
                                         <?php endforeach; ?>
                                     </tbody>
                                 </table>
                             </div>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Riepilogo mensile -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">
-                            <i class="fas fa-chart-bar"></i> 
-                            <?= t('monthly_summary', $current_lang) ?> (<?= $current_month_name ?> <?= date('Y') ?>)
-                            <a href="export_excel.php" class="btn btn-success btn-sm float-end">
-                                <i class="fas fa-download"></i> <?= t('export_excel', $current_lang) ?>
-                            </a>
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <?php if (empty($monthly_summary)): ?>
-                            <p class="text-muted text-center"><?= t('no_data_month', $current_lang) ?></p>
-                        <?php else: ?>
-                            <!-- Total monthly hours -->
-                            <?php 
-                            $total_monthly_hours = array_sum(array_column($monthly_summary, 'total_hours'));
-                            ?>
-                            <div class="row mb-4">
-                                <div class="col-12">
-                                    <div class="card bg-primary text-white">
-                                        <div class="card-body text-center">
-                                            <h4 class="mb-2">
-                                                <i class="fas fa-chart-line me-2"></i>
-                                                <?= t('total_monthly_hours', $current_lang) ?>
-                                            </h4>
-                                            <h1 class="display-4 mb-0"><?= $total_monthly_hours ?>h</h1>
-                                            <small class="opacity-75"><?= $current_month_name ?> <?= date('Y') ?></small>
-                                        </div>
-                                    </div>
-                                </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="summary-card">
+                                <h5><i class="fas fa-download me-2"></i><?= t('export_excel', $current_lang) ?></h5>
+                                <p class="mb-3"><?= t('monthly_summary', $current_lang) ?> - <?= $current_month_name ?></p>
+                                <a href="export_excel.php?month=<?= $current_month ?>" class="btn btn-export">
+                                    <i class="fas fa-file-excel me-2"></i>
+                                    <?= t('export_excel', $current_lang) ?>
+                                </a>
                             </div>
-                            
-                            <!-- Company breakdown -->
-                            <h6 class="text-muted mb-3">
-                                <i class="fas fa-building me-2"></i>
-                                <?= t('summary_by_company', $current_lang) ?>
-                            </h6>
-                            <div class="row">
-                                <?php foreach ($monthly_summary as $summary): ?>
-                                    <?php 
-                                    $company_color = $summary['company_color'] ?? '#6c757d';
-                                    ?>
-                                    <div class="col-md-4 mb-3">
-                                                                            <div class="card company-card" style="border-color: <?= $company_color ?>; border-width: 2px;">
-                                        <div class="card-body text-center">
-                                                <h6 class="card-title"><?= htmlspecialchars($summary['company_name']) ?></h6>
-                                                <h3 style="color: <?= $company_color ?>;"><?= $summary['total_hours'] ?>h</h3>
-                                                <small class="text-muted">
-                                                    <?= round(($summary['total_hours'] / $total_monthly_hours) * 100, 1) ?>% <?= t('of_total', $current_lang) ?>
-                                                </small>
-                                            </div>
-                                        </div>
-                                    </div>
-                                <?php endforeach; ?>
-                            </div>
-                        <?php endif; ?>
+                        </div>
                     </div>
-                </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
 
-    <!-- Modale per la modifica dei record -->
-    <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <!-- Edit Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editModalLabel">
-                        <i class="fas fa-edit"></i> <?= t('edit_record', $current_lang) ?>
+                    <h5 class="modal-title">
+                        <i class="fas fa-edit me-2"></i>
+                        <?= t('edit_record', $current_lang) ?>
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form method="POST" id="editForm">
+                <form method="POST" action="">
                     <div class="modal-body">
                         <input type="hidden" name="action" value="edit">
                         <input type="hidden" name="id" id="edit_id">
+                        
                         <div class="mb-3">
-                            <label for="edit_company_id" class="form-label"><?= t('company', $current_lang) ?></label>
+                            <label for="edit_company_id" class="form-label">
+                                <?= t('company', $current_lang) ?> *
+                            </label>
                             <select name="company_id" id="edit_company_id" class="form-select" required>
                                 <?php foreach ($companies as $company): ?>
                                     <option value="<?= $company['id'] ?>"><?= htmlspecialchars($company['name']) ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>
+                        
                         <div class="mb-3">
-                            <label for="edit_date" class="form-label"><?= t('date', $current_lang) ?></label>
+                            <label for="edit_date" class="form-label">
+                                <?= t('date', $current_lang) ?> *
+                            </label>
                             <input type="date" name="date" id="edit_date" class="form-control" required>
                         </div>
+                        
                         <div class="mb-3">
-                            <label for="edit_hours" class="form-label"><?= t('hours', $current_lang) ?></label>
+                            <label for="edit_hours" class="form-label">
+                                <?= t('hours', $current_lang) ?> *
+                            </label>
                             <input type="number" name="hours" id="edit_hours" class="form-control" step="0.5" min="0" required>
                         </div>
+                        
                         <div class="mb-3">
-                            <label for="edit_description" class="form-label"><?= t('edit_description_optional', $current_lang) ?></label>
+                            <label for="edit_description" class="form-label">
+                                <?= t('edit_description_optional', $current_lang) ?>
+                            </label>
                             <input type="text" name="description" id="edit_description" class="form-control">
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= t('cancel', $current_lang) ?></button>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            <?= t('cancel', $current_lang) ?>
+                        </button>
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> <?= t('save_changes', $current_lang) ?>
+                            <?= t('save_changes', $current_lang) ?>
                         </button>
                     </div>
                 </form>
@@ -778,204 +761,81 @@ function isColorDark($color) {
         </div>
     </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <?= t('confirm_delete', $current_lang) ?>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p><?= t('confirm_delete', $current_lang) ?></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <?= t('cancel', $current_lang) ?>
+                    </button>
+                    <form method="POST" action="" style="display: inline;">
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="id" id="delete_id">
+                        <button type="submit" class="btn btn-primary">
+                            <?= t('delete', $current_lang) ?>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <!-- Notifica di successo -->
-    <?php if (isset($_GET['success'])): ?>
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div id="successToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header bg-success text-white">
-                <i class="fas fa-check-circle me-2"></i>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">
-                <?= t('record_added', $current_lang) ?>
-            </div>
-        </div>
-    </div>
-    <?php endif; ?>
-
-    <!-- Notifica di eliminazione -->
-    <?php if (isset($_GET['deleted'])): ?>
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div id="deleteToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header bg-warning text-dark">
-                <i class="fas fa-trash me-2"></i>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">
-                <?= t('record_deleted', $current_lang) ?>
-            </div>
-        </div>
-    </div>
-    <?php endif; ?>
-
-    <!-- Notifica di modifica -->
-    <?php if (isset($_GET['edited'])): ?>
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div id="editToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header bg-info text-white">
-                <i class="fas fa-edit me-2"></i>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">
-                <?= t('record_edited', $current_lang) ?>
-            </div>
-        </div>
-    </div>
-    <?php endif; ?>
-
-    <style>
-        /* Animazione delle notifiche */
-        .toast.show {
-            animation: slideInRight 0.5s ease-out;
-        }
-        
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        
-        .toast.fade-out {
-            animation: slideOutRight 0.5s ease-in forwards;
-        }
-        
-        @keyframes slideOutRight {
-            from {
-                transform: translateX(0);
-                opacity: 1;
-            }
-            to {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-        }
-        
-        /* Stili delle notifiche */
-        .toast {
-            border: none;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-        }
-        
-        .toast-header {
-            border-radius: 10px 10px 0 0;
-            border-bottom: none;
-        }
-        
-        .toast-body {
-            padding: 1rem;
-            font-weight: 500;
-        }
-        
-        /* Animazione per l'icona di successo */
-        .toast.show .fas.fa-check-circle {
-            animation: bounceIn 0.6s ease-out;
-        }
-        
-        @keyframes bounceIn {
-            0% {
-                transform: scale(0);
-                opacity: 0;
-            }
-            50% {
-                transform: scale(1.2);
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-    </style>
-
     <script>
-        // Performance optimizations
-        (function() {
-            // Reduce animation on low-end devices
-            const isLowEndDevice = navigator.hardwareConcurrency <= 4 || 
-                                  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        // Edit record function
+        function editRecord(id, companyId, date, hours, description) {
+            document.getElementById('edit_id').value = id;
+            document.getElementById('edit_company_id').value = companyId;
+            document.getElementById('edit_date').value = date;
+            document.getElementById('edit_hours').value = hours;
+            document.getElementById('edit_description').value = description;
             
-            if (isLowEndDevice) {
-                document.documentElement.style.setProperty('--animation-duration', '40s');
-                document.querySelector('.floating-shapes')?.remove();
-            }
-        })();
+            new bootstrap.Modal(document.getElementById('editModal')).show();
+        }
 
-        // Hide notification after 4 seconds and clean URL
-        document.addEventListener('DOMContentLoaded', function() {
-            const toasts = ['successToast', 'deleteToast', 'editToast'];
-            let hasToast = false;
-            
-            toasts.forEach(function(toastId) {
-                const toast = document.getElementById(toastId);
-                if (toast) {
-                    hasToast = true;
-                    setTimeout(function() {
-                        toast.classList.add('fade-out');
-                        setTimeout(function() {
-                            toast.remove();
-                        }, 500);
-                    }, 4000);
-                }
-            });
-            
-            // Clean URL parameters after showing notification
-            if (hasToast) {
-                // Remove URL parameters without reloading the page
-                const url = new URL(window.location);
-                url.searchParams.delete('success');
-                url.searchParams.delete('deleted');
-                url.searchParams.delete('edited');
-                window.history.replaceState({}, document.title, url.toString());
-            }
-        });
+        // Delete record function
+        function deleteRecord(id) {
+            document.getElementById('delete_id').value = id;
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
 
-        // Event listeners for record editing
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.edit-btn')) {
-                const button = e.target.closest('.edit-btn');
-                const id = button.getAttribute('data-id');
-                const companyId = button.getAttribute('data-company-id');
-                const date = button.getAttribute('data-date');
-                const hours = button.getAttribute('data-hours');
-                const description = button.getAttribute('data-description');
-                
-                // Populate edit form
-                document.getElementById('edit_id').value = id;
-                document.getElementById('edit_company_id').value = companyId;
-                document.getElementById('edit_date').value = date;
-                document.getElementById('edit_hours').value = hours;
-                document.getElementById('edit_description').value = description;
-                
-                // Show modal
-                const editModal = new bootstrap.Modal(document.getElementById('editModal'));
-                editModal.show();
-            }
-        });
-
-        // Language switching functionality with debouncing
-        document.addEventListener('DOMContentLoaded', function() {
-            const languageRadios = document.querySelectorAll('input[name="language"]');
-            let timeoutId;
+        // Scroll animations
+        function animateOnScroll() {
+            const elements = document.querySelectorAll('.fade-in-up, .slide-in-left, .scale-in');
             
-            languageRadios.forEach(function(radio) {
-                radio.addEventListener('change', function() {
-                    clearTimeout(timeoutId);
-                    const selectedLang = this.value;
-                    
-                    timeoutId = setTimeout(function() {
-                        const currentUrl = new URL(window.location);
-                        currentUrl.searchParams.set('lang', selectedLang);
-                        window.location.href = currentUrl.toString();
-                    }, 150); // Debounce 150ms
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate');
+                    }
                 });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
             });
+
+            elements.forEach(element => {
+                observer.observe(element);
+            });
+        }
+
+        // Initialize animations when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            animateOnScroll();
+            
+            // Set today's date as default
+            document.getElementById('date').value = new Date().toISOString().split('T')[0];
         });
     </script>
 </body>

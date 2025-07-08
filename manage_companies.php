@@ -109,497 +109,516 @@ function isColorDark($color) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --animation-duration: 15s;
-            --animation-duration-slow: 25s;
-            --transition-fast: 0.2s;
-            --transition-normal: 0.3s;
+            --primary-pastel: #f8b5d3;
+            --secondary-pastel: #b8e6b8;
+            --accent-pastel: #ffd6a5;
+            --light-pastel: #f0f8ff;
+            --dark-text: #2c3e50;
+            --shadow-soft: rgba(0, 0, 0, 0.1);
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Respect user's motion preferences */
-        @media (prefers-reduced-motion: reduce) {
-            :root {
-                --animation-duration: 60s;
-                --animation-duration-slow: 80s;
-                --transition-fast: 0.1s;
-                --transition-normal: 0.15s;
+        /* Scroll animations */
+        @media (prefers-reduced-motion: no-preference) {
+            .fade-in-up {
+                opacity: 0;
+                transform: translateY(30px);
+                transition: var(--transition-smooth);
             }
             
-            .shape {
-                animation: none !important;
+            .fade-in-up.animate {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            
+            .slide-in-left {
+                opacity: 0;
+                transform: translateX(-30px);
+                transition: var(--transition-smooth);
+            }
+            
+            .slide-in-left.animate {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            
+            .scale-in {
+                opacity: 0;
+                transform: scale(0.9);
+                transition: var(--transition-smooth);
+            }
+            
+            .scale-in.animate {
+                opacity: 1;
+                transform: scale(1);
             }
         }
 
         body {
-            background: linear-gradient(-45deg, #667eea, #764ba2, #667eea, #764ba2);
-            background-size: 400% 400%;
-            animation: gradientShift var(--animation-duration) ease infinite;
+            background: var(--light-pastel);
             min-height: 100vh;
-            position: relative;
-            overflow-x: hidden;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark-text);
+            line-height: 1.6;
         }
-        
-        /* Animated gradient background */
-        @keyframes gradientShift {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
         }
-        
-        /* Geometric background elements */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: 
-                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.2) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: -1;
-        }
-        
-        /* Floating geometric shapes - Optimized */
-        .floating-shapes {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-            will-change: transform;
-        }
-        
-        .shape {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.08);
-            border-radius: 50%;
-            animation: float var(--animation-duration-slow) infinite linear;
-            will-change: transform;
-            transform: translateZ(0); /* Force hardware acceleration */
-        }
-        
-        .shape:nth-child(1) {
-            width: 80px;
-            height: 80px;
-            top: 10%;
-            left: 10%;
-            animation-delay: 0s;
-        }
-        
-        .shape:nth-child(2) {
-            width: 120px;
-            height: 120px;
-            top: 60%;
-            left: 80%;
-            animation-delay: -5s;
-            border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
-        }
-        
-        .shape:nth-child(3) {
-            width: 60px;
-            height: 60px;
-            top: 80%;
-            left: 20%;
-            animation-delay: -10s;
-        }
-        
-        .shape:nth-child(4) {
-            width: 100px;
-            height: 100px;
-            top: 20%;
-            left: 70%;
-            animation-delay: -15s;
-            border-radius: 63% 37% 54% 46% / 55% 48% 52% 45%;
-        }
-        
-        @keyframes float {
-            0%, 100% {
-                transform: translateY(0px) rotate(0deg);
-                opacity: 0.5;
-            }
-            50% {
-                transform: translateY(-20px) rotate(180deg);
-                opacity: 0.8;
-            }
-        }
-        
+
         .card {
+            background: white;
             border: none;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
             box-shadow: 
-                0 8px 32px 0 rgba(31, 38, 135, 0.2),
-                inset 0 1px 0 rgba(255, 255, 255, 0.4);
-            will-change: transform;
-            transform: translateZ(0);
+                0 4px 6px var(--shadow-soft),
+                0 10px 15px rgba(0, 0, 0, 0.05);
+            transition: var(--transition-smooth);
+            overflow: hidden;
+            position: relative;
         }
-        
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 
+                0 8px 12px var(--shadow-soft),
+                0 20px 30px rgba(0, 0, 0, 0.08);
+        }
+
         .card-header {
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(15px);
-            color: white;
-            border-radius: 20px 20px 0 0 !important;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--primary-pastel);
+            color: var(--dark-text);
             border: none;
-            border-radius: 10px;
-            box-shadow: 0 4px 15px 0 rgba(102, 126, 234, 0.3);
-            transition: transform var(--transition-fast) ease, box-shadow var(--transition-fast) ease;
+            padding: 1.5rem;
+            font-weight: 600;
+            font-size: 1.1rem;
         }
-        
+
+        .card-body {
+            padding: 2rem;
+        }
+
+        .btn-primary {
+            background: var(--primary-pastel);
+            border: none;
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+            color: var(--dark-text);
+        }
+
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px 0 rgba(102, 126, 234, 0.4);
+            box-shadow: 0 8px 20px rgba(248, 181, 211, 0.4);
+            color: var(--dark-text);
         }
-        
-        .btn-outline-light {
-            border-radius: 10px;
-            transition: background-color var(--transition-fast) ease, transform var(--transition-fast) ease;
-        }
-        
-        .btn-outline-light:hover {
-            background: rgba(255, 255, 255, 0.2);
-            transform: translateY(-1px);
-        }
-        
-        .form-control, .form-select {
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            border-radius: 10px;
-            color: white;
-            transition: border-color var(--transition-fast) ease, background-color var(--transition-fast) ease;
-            will-change: auto;
-        }
-        
-        .form-control:focus, .form-select:focus {
-            background: rgba(255, 255, 255, 0.15);
-            border-color: rgba(255, 255, 255, 0.4);
-            box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.1);
-            color: white;
-        }
-        
-        .form-control::placeholder {
-            color: rgba(255, 255, 255, 0.7);
-        }
-        
-        .form-label {
-            color: white;
+
+        .btn-outline-secondary {
+            border: 2px solid var(--accent-pastel);
+            color: var(--dark-text);
+            border-radius: 12px;
+            padding: 0.75rem 1.5rem;
             font-weight: 500;
+            transition: var(--transition-smooth);
+            background: transparent;
         }
-        
-        /* Fix dropdown options */
-        .form-select option {
-            background: #fff;
-            color: #333;
-            padding: 0.5rem;
+
+        .btn-outline-secondary:hover {
+            background: var(--accent-pastel);
+            transform: translateY(-1px);
+            color: var(--dark-text);
         }
-        
-        .form-select:not([multiple]):not([size]) {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e");
+
+        .form-control, .form-select {
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            transition: var(--transition-smooth);
+            background: white;
+            color: var(--dark-text);
         }
-        
-        .company-card {
-            transition: transform var(--transition-normal) ease, background-color var(--transition-normal) ease;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            will-change: transform;
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-pastel);
+            box-shadow: 0 0 0 0.2rem rgba(248, 181, 211, 0.25);
+            outline: none;
         }
-        
-        .company-card:hover {
-            transform: translateY(-5px) translateZ(0);
-            background: rgba(255, 255, 255, 0.15);
+
+        .form-label {
+            color: var(--dark-text);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
         }
-        
-        .company-badge {
-            font-size: 0.9em;
-            padding: 0.5em 1em;
+
+        .table {
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px var(--shadow-soft);
         }
-        
-        /* Modal styling */
-        .modal-content {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
+
+        .table th {
+            background: var(--secondary-pastel);
+            color: var(--dark-text);
+            font-weight: 600;
             border: none;
-            border-radius: 20px;
+            padding: 1rem;
         }
-        
-        .modal-header {
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-            border-radius: 20px 20px 0 0;
+
+        .table td {
+            background: white;
+            border: none;
+            border-bottom: 1px solid #f8f9fa;
+            padding: 1rem;
+            transition: var(--transition-smooth);
         }
-        
-        .modal-footer {
-            border-top: 1px solid rgba(0, 0, 0, 0.1);
+
+        .table tbody tr:hover {
+            background: #f8f9fa;
+            transform: scale(1.01);
+        }
+
+        .badge {
+            border-radius: 8px;
+            font-weight: 500;
+            padding: 0.5rem 0.75rem;
+        }
+
+        .navbar {
+            background: white;
+            box-shadow: 0 2px 10px var(--shadow-soft);
             border-radius: 0 0 20px 20px;
         }
-        
-        /* Modal form controls - different styling for light background */
-        .modal .form-control, .modal .form-select {
-            background: rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(0, 0, 0, 0.1);
-            border-radius: 10px;
-            color: #333;
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--dark-text) !important;
         }
-        
-        .modal .form-control:focus, .modal .form-select:focus {
-            background: rgba(0, 0, 0, 0.08);
-            border-color: #667eea;
-            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-            color: #333;
-        }
-        
-        .modal .form-control::placeholder {
-            color: rgba(0, 0, 0, 0.5);
-        }
-        
-        .modal .form-label {
-            color: #333;
+
+        .language-selector {
+            background: var(--accent-pastel);
+            border: none;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            color: var(--dark-text);
             font-weight: 500;
         }
-        
-        /* Modal dropdown styling */
-        .modal .form-select option {
-            background: #fff;
-            color: #333;
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
         }
-        
-        .modal .form-select:not([multiple]):not([size]) {
-            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23333333' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m1 6 7 7 7-7'/%3e%3c/svg%3e");
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
         }
-        
-        .text-muted {
-            color: rgba(255, 255, 255, 0.8) !important;
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--primary-pastel);
+            border-radius: 4px;
         }
-        
-        .input-group-text {
-            background: rgba(255, 255, 255, 0.12);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            color: white;
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #f4a6c7;
         }
-        
-        .alert {
-            background: rgba(248, 215, 218, 0.9);
-            border: 1px solid rgba(220, 53, 69, 0.3);
-            border-radius: 15px;
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            
+            .card-body {
+                padding: 1.5rem;
+            }
         }
-        
-        /* Enhanced language switcher */
-        .btn-check:checked + .btn-outline-light {
-            background: rgba(255, 255, 255, 0.3);
-            border-color: rgba(255, 255, 255, 0.5);
-            color: white;
+
+        /* Company badge styles */
+        .company-badge {
+            font-size: 0.8em;
+            padding: 0.4em 0.8em;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: var(--transition-smooth);
+        }
+
+        .company-badge:hover {
             transform: scale(1.05);
+        }
+
+        /* Modal styles */
+        .modal-content {
+            background: white;
+            border: none;
+            border-radius: 24px;
+            box-shadow: 0 20px 40px var(--shadow-soft);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid #f8f9fa;
+            border-radius: 24px 24px 0 0;
+            background: var(--light-pastel);
+        }
+
+        .modal-footer {
+            border-top: 1px solid #f8f9fa;
+            border-radius: 0 0 24px 24px;
+        }
+
+        /* Toast notifications */
+        .toast {
+            background: white;
+            border: none;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px var(--shadow-soft);
+        }
+
+        .toast-header {
+            background: var(--light-pastel);
+            border-bottom: 1px solid #f8f9fa;
+            border-radius: 16px 16px 0 0;
+        }
+
+        /* Color picker styling */
+        .color-picker {
+            width: 50px;
+            height: 50px;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .color-picker:hover {
+            transform: scale(1.1);
+        }
+
+        /* Company card */
+        .company-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: var(--transition-smooth);
+            box-shadow: 0 2px 8px var(--shadow-soft);
+            border: 2px solid transparent;
+        }
+
+        .company-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px var(--shadow-soft);
+        }
+
+        /* Accessibility improvements */
+        .btn:focus, .form-control:focus, .form-select:focus {
+            outline: 2px solid var(--primary-pastel);
+            outline-offset: 2px;
+        }
+
+        /* Print styles */
+        @media print {
+            .btn, .language-selector {
+                display: none !important;
+            }
+            
+            .card {
+                box-shadow: none !important;
+                border: 1px solid #ddd !important;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Floating geometric shapes -->
-    <div class="floating-shapes">
-        <div class="shape"></div>
-        <div class="shape"></div>
-        <div class="shape"></div>
-        <div class="shape"></div>
-    </div>
-    
-    <div class="container py-5">
-        <!-- Header -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h1 class="text-white mb-0">
-                        <i class="fas fa-building me-3"></i>
-                        <?= t('manage_companies', $current_lang) ?>
-                    </h1>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Language Switcher -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="d-flex justify-content-end">
-                    <div class="card bg-white bg-opacity-10 border-0">
-                        <div class="card-body p-3">
-                            <div class="row align-items-center">
-                                <div class="col-auto">
-                                    <div class="btn-group" role="group">
-                                        <input type="radio" class="btn-check" name="language" id="lang_it" value="it" <?= $current_lang === 'it' ? 'checked' : '' ?>>
-                                        <label class="btn btn-outline-light btn-sm me-1 " for="lang_it">
-                                            🇮🇹 <?= t('italian', $current_lang) ?>
-                                        </label>
-                                        
-                                        <input type="radio" class="btn-check" name="language" id="lang_en" value="en" <?= $current_lang === 'en' ? 'checked' : '' ?>>
-                                        <label class="btn btn-outline-light btn-sm" for="lang_en">
-                                            🇺🇸 <?= t('english', $current_lang) ?>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row-1 mb-3">
-            <a href="index.php" class="btn btn-outline-light">
-                <i class="fas fa-arrow-left me-2"></i>
-                <?= t('back_to_main', $current_lang) ?>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg">
+        <div class="container">
+            <a class="navbar-brand" href="index.php">
+                <i class="fas fa-clock me-2"></i>
+                <?= t('page_title', $current_lang) ?>
             </a>
-        </div>
-        
-
-        <!-- Error Message -->
-        <?php if (isset($error)): ?>
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <i class="fas fa-exclamation-triangle me-2"></i>
-                    <?= htmlspecialchars($error) ?>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            
+            <div class="d-flex align-items-center">
+                <a href="index.php" class="btn btn-outline-secondary me-3">
+                    <i class="fas fa-arrow-left me-1"></i>
+                    <?= t('back_to_main', $current_lang) ?>
+                </a>
+                
+                <div class="dropdown">
+                    <button class="btn language-selector dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-globe me-1"></i>
+                        <?= $current_lang === 'it' ? '🇮🇹' : '🇺🇸' ?>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="?lang=it">🇮🇹 <?= t('italian', $current_lang) ?></a></li>
+                        <li><a class="dropdown-item" href="?lang=en">🇺🇸 <?= t('english', $current_lang) ?></a></li>
+                    </ul>
                 </div>
             </div>
         </div>
+    </nav>
+
+    <div class="container">
+        <!-- Success/Error Messages -->
+        <?php if (isset($_GET['success'])): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                <?= t('company_added', $current_lang) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
         <?php endif; ?>
 
-        <!-- Form per l'aggiunta di nuove aziende -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">
-                            <i class="fas fa-plus"></i> 
-                            <?= t('add_new_company', $current_lang) ?>
-                        </h5>
+        <?php if (isset($_GET['edited'])): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <i class="fas fa-edit me-2"></i>
+                <?= t('company_modified', $current_lang) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
+        <?php if (isset($_GET['deleted'])): ?>
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <i class="fas fa-trash me-2"></i>
+                <?= t('company_deleted', $current_lang) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
+        <?php if (isset($error)): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <?= htmlspecialchars($error) ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        <?php endif; ?>
+
+        <!-- Add Company Form -->
+        <div class="card fade-in-up mb-4">
+            <div class="card-header">
+                <i class="fas fa-plus me-2"></i>
+                <?= t('add_new_company', $current_lang) ?>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="">
+                    <input type="hidden" name="action" value="add_company">
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">
+                                <?= t('company_name', $current_lang) ?> *
+                            </label>
+                            <input type="text" name="name" id="name" class="form-control" required>
+                        </div>
+                        
+                        <div class="col-md-4 mb-3">
+                            <label for="color" class="form-label">
+                                <?= t('color', $current_lang) ?>
+                            </label>
+                            <input type="color" name="color" id="color" class="form-control color-picker" value="#6c757d">
+                        </div>
+                        
+                        <div class="col-md-2 mb-3 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-save"></i>
+                            </button>
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <form method="POST" class="row g-3">
-                            <input type="hidden" name="action" value="add_company">
-                            <div class="col-md-6">
-                                <label for="name" class="form-label"><?= t('company_name', $current_lang) ?></label>
-                                <input type="text" name="name" id="name" class="form-control" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label for="color" class="form-label"><?= t('color', $current_lang) ?></label>
-                                <div class="input-group">
-                                    <input type="color" name="color" id="color" class="form-control form-control-color" value="#6c757d" title="<?= t('color', $current_lang) ?>">
-                                    <span class="input-group-text">
-                                        <i class="fas fa-palette"></i>
-                                    </span>
-                                </div>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">&nbsp;</label>
-                                <button type="submit" class="btn btn-primary w-100">
-                                    <i class="fas fa-save me-2"></i><?= t('add', $current_lang) ?>
-                                </button>
-                            </div>
-                        </form>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
 
-        <!-- Elenco delle aziende -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="mb-0">
-                            <i class="fas fa-list"></i> 
-                            <?= t('companies_list', $current_lang) ?> (<?= count($companies) ?>)
-                        </h5>
-                    </div>
-                    <div class="card-body">
-                        <?php if (empty($companies)): ?>
-                            <p class="text-muted text-center"><?= t('no_companies', $current_lang) ?></p>
-                        <?php else: ?>
-                            <div class="row">
+        <!-- Companies List -->
+        <div class="card slide-in-left">
+            <div class="card-header">
+                <i class="fas fa-building me-2"></i>
+                <?= t('companies_list', $current_lang) ?>
+            </div>
+            <div class="card-body">
+                <?php if (empty($companies)): ?>
+                    <p class="text-muted mb-0">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <?= t('no_companies', $current_lang) ?>
+                    </p>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th><?= t('company_name', $current_lang) ?></th>
+                                    <th><?= t('color', $current_lang) ?></th>
+                                    <th><?= t('actions', $current_lang) ?></th>
+                                </tr>
+                            </thead>
+                            <tbody>
                                 <?php foreach ($companies as $company): ?>
-                                    <div class="col-md-6 col-lg-4 mb-3">
-                                        <div class="card company-card h-100">
-                                            <div class="card-body text-center">
-                                                <div class="mb-3">
-                                                    <span class="badge company-badge" style="<?= getCompanyBadgeStyle($company['color']) ?>">
-                                                        <?= htmlspecialchars($company['name']) ?>
-                                                    </span>
-                                                </div>
-                                                <small class="text-muted d-block mb-3">
-                                                    <?= $current_lang === 'it' ? 'Creata il' : 'Created on' ?> <?= date('d/m/Y', strtotime($company['created_at'])) ?>
-                                                </small>
-                                                <div class="btn-group w-100" role="group">
-                                                    <button type="button" class="btn btn-outline-primary btn-sm edit-company-btn" 
-                                                            data-id="<?= $company['id'] ?>"
-                                                            data-name="<?= htmlspecialchars($company['name']) ?>"
-                                                            data-color="<?= htmlspecialchars($company['color']) ?>">
-                                                        <i class="fas fa-edit"></i>
-                                                    </button>
-                                                    <form method="POST" style="display: inline;">
-                                                        <input type="hidden" name="action" value="delete_company">
-                                                        <input type="hidden" name="id" value="<?= $company['id'] ?>">
-                                                        <button type="submit" class="btn btn-outline-danger btn-sm" 
-                                                                onclick="return confirm('<?= t('confirm_delete_company', $current_lang) ?>')">
-                                                            <i class="fas fa-trash"></i>
-                                                        </button>
-                                                    </form>
-                                                </div>
+                                    <tr>
+                                        <td>
+                                            <span class="badge company-badge" style="<?= getCompanyBadgeStyle($company['color']) ?>">
+                                                <?= htmlspecialchars($company['name']) ?>
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="color-preview me-2" style="width: 30px; height: 30px; background-color: <?= $company['color'] ?>; border-radius: 6px;"></div>
+                                                <span class="text-muted"><?= $company['color'] ?></span>
                                             </div>
-                                        </div>
-                                    </div>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-secondary me-1" onclick="editCompany(<?= $company['id'] ?>, '<?= htmlspecialchars($company['name']) ?>', '<?= $company['color'] ?>')">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-secondary" onclick="deleteCompany(<?= $company['id'] ?>, '<?= htmlspecialchars($company['name']) ?>')">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
                                 <?php endforeach; ?>
-                            </div>
-                        <?php endif; ?>
+                            </tbody>
+                        </table>
                     </div>
-                </div>
+                <?php endif; ?>
             </div>
         </div>
     </div>
 
-    <!-- Modale per la modifica delle aziende -->
-    <div class="modal fade" id="editCompanyModal" tabindex="-1" aria-labelledby="editCompanyModalLabel" aria-hidden="true">
+    <!-- Edit Company Modal -->
+    <div class="modal fade" id="editModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="editCompanyModalLabel">
-                        <i class="fas fa-edit"></i> <?= t('edit_company', $current_lang) ?>
+                    <h5 class="modal-title">
+                        <i class="fas fa-edit me-2"></i>
+                        <?= t('edit_company', $current_lang) ?>
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
-                <form method="POST" id="editCompanyForm">
+                <form method="POST" action="">
                     <div class="modal-body">
                         <input type="hidden" name="action" value="edit_company">
-                        <input type="hidden" name="id" id="edit_company_id">
+                        <input type="hidden" name="id" id="edit_id">
+                        
                         <div class="mb-3">
-                            <label for="edit_company_name" class="form-label"><?= t('company_name', $current_lang) ?></label>
-                            <input type="text" name="name" id="edit_company_name" class="form-control" required>
+                            <label for="edit_name" class="form-label">
+                                <?= t('company_name', $current_lang) ?> *
+                            </label>
+                            <input type="text" name="name" id="edit_name" class="form-control" required>
                         </div>
+                        
                         <div class="mb-3">
-                            <label for="edit_company_color" class="form-label"><?= t('color', $current_lang) ?></label>
-                            <div class="input-group">
-                                <input type="color" name="color" id="edit_company_color" class="form-control form-control-color" title="<?= t('color', $current_lang) ?>">
-                                <span class="input-group-text">
-                                    <i class="fas fa-palette"></i>
-                                </span>
-                            </div>
+                            <label for="edit_color" class="form-label">
+                                <?= t('color', $current_lang) ?>
+                            </label>
+                            <input type="color" name="color" id="edit_color" class="form-control color-picker">
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?= t('cancel', $current_lang) ?></button>
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            <?= t('cancel', $current_lang) ?>
+                        </button>
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> <?= t('save_changes', $current_lang) ?>
+                            <?= t('save_changes', $current_lang) ?>
                         </button>
                     </div>
                 </form>
@@ -607,124 +626,78 @@ function isColorDark($color) {
         </div>
     </div>
 
+    <!-- Delete Confirmation Modal -->
+    <div class="modal fade" id="deleteModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        <?= t('confirm_delete_company', $current_lang) ?>
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p><?= t('confirm_delete_company', $current_lang) ?></p>
+                    <p class="text-muted" id="delete_company_name"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                        <?= t('cancel', $current_lang) ?>
+                    </button>
+                    <form method="POST" action="" style="display: inline;">
+                        <input type="hidden" name="action" value="delete_company">
+                        <input type="hidden" name="id" id="delete_id">
+                        <button type="submit" class="btn btn-primary">
+                            <?= t('delete', $current_lang) ?>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Notifiche di successo -->
-    <?php if (isset($_GET['success'])): ?>
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div id="successToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header bg-success text-white">
-                <i class="fas fa-check-circle me-2"></i>
-                <strong class="me-auto">Successo!</strong>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">
-                <?= t('company_added', $current_lang) ?>
-            </div>
-        </div>
-    </div>
-    <?php endif; ?>
-
-    <?php if (isset($_GET['edited'])): ?>
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div id="editToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header bg-info text-white">
-                <i class="fas fa-edit me-2"></i>
-                <strong class="me-auto">Modificato!</strong>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">
-                <?= t('company_modified', $current_lang) ?>
-            </div>
-        </div>
-    </div>
-    <?php endif; ?>
-
-    <?php if (isset($_GET['deleted'])): ?>
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div id="deleteToast" class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
-            <div class="toast-header bg-warning text-dark">
-                <i class="fas fa-trash me-2"></i>
-                <strong class="me-auto">Eliminato!</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-            </div>
-            <div class="toast-body">
-                <?= t('company_deleted', $current_lang) ?>
-            </div>
-        </div>
-    </div>
-    <?php endif; ?>
-
     <script>
-        // Performance optimizations
-        (function() {
-            // Reduce animation on low-end devices
-            const isLowEndDevice = navigator.hardwareConcurrency <= 4 || 
-                                  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        // Edit company function
+        function editCompany(id, name, color) {
+            document.getElementById('edit_id').value = id;
+            document.getElementById('edit_name').value = name;
+            document.getElementById('edit_color').value = color;
             
-            if (isLowEndDevice) {
-                document.documentElement.style.setProperty('--animation-duration', '40s');
-                document.querySelector('.floating-shapes')?.remove();
-            }
-        })();
+            new bootstrap.Modal(document.getElementById('editModal')).show();
+        }
 
-        // Hide notification after 4 seconds and clean URL
-        document.addEventListener('DOMContentLoaded', function() {
-            const toasts = ['successToast', 'editToast', 'deleteToast'];
-            let hasToast = false;
-            
-            toasts.forEach(function(toastId) {
-                const toast = document.getElementById(toastId);
-                if (toast) {
-                    hasToast = true;
-                    setTimeout(function() {
-                        toast.classList.add('fade');
-                        setTimeout(function() {
-                            toast.remove();
-                        }, 500);
-                    }, 4000);
-                }
-            });
-            
-            // Clean URL parameters after showing notification
-            if (hasToast) {
-                const url = new URL(window.location);
-                url.searchParams.delete('success');
-                url.searchParams.delete('edited');
-                url.searchParams.delete('deleted');
-                window.history.replaceState({}, document.title, url.toString());
-            }
-        });
+        // Delete company function
+        function deleteCompany(id, name) {
+            document.getElementById('delete_id').value = id;
+            document.getElementById('delete_company_name').textContent = name;
+            new bootstrap.Modal(document.getElementById('deleteModal')).show();
+        }
 
-        // Language switching functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const languageRadios = document.querySelectorAll('input[name="language"]');
+        // Scroll animations
+        function animateOnScroll() {
+            const elements = document.querySelectorAll('.fade-in-up, .slide-in-left, .scale-in');
             
-            languageRadios.forEach(function(radio) {
-                radio.addEventListener('change', function() {
-                    const selectedLang = this.value;
-                    const currentUrl = new URL(window.location);
-                    currentUrl.searchParams.set('lang', selectedLang);
-                    window.location.href = currentUrl.toString();
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('animate');
+                    }
                 });
+            }, {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
             });
-        });
 
-        // Company editing functionality
-        document.addEventListener('click', function(e) {
-            if (e.target.closest('.edit-company-btn')) {
-                const button = e.target.closest('.edit-company-btn');
-                const id = button.getAttribute('data-id');
-                const name = button.getAttribute('data-name');
-                const color = button.getAttribute('data-color');
-                
-                document.getElementById('edit_company_id').value = id;
-                document.getElementById('edit_company_name').value = name;
-                document.getElementById('edit_company_color').value = color;
-                
-                const editModal = new bootstrap.Modal(document.getElementById('editCompanyModal'));
-                editModal.show();
-            }
+            elements.forEach(element => {
+                observer.observe(element);
+            });
+        }
+
+        // Initialize animations when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            animateOnScroll();
         });
     </script>
 </body>
