@@ -105,14 +105,17 @@ function isColorDark($color) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestione Aziende - Gestore Ore Straordinarie</title>
+    <link rel="icon" href="./vendor/src/imgs/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="./vendor/src/imgs/favicon.svg" sizes="any" type="image/svg+xml">
+    <link rel="shortcut icon" href="./vendor/src/imgs/favicon.svg" type="image/svg+xml">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-pastel: #f8b5d3;
-            --secondary-pastel: #b8e6b8;
-            --accent-pastel: #ffd6a5;
-            --light-pastel: #f0f8ff;
+            --primary-pastel: #FFEDF3;
+            --secondary-pastel: #ADEED9;
+            --accent-pastel: #56DFCF;
+            --light-pastel: #0ABAB5;
             --dark-text: #2c3e50;
             --shadow-soft: rgba(0, 0, 0, 0.1);
             --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -435,11 +438,10 @@ function isColorDark($color) {
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand" href="index.php">
-                <i class="fas fa-clock me-2"></i>
-                <?= t('page_title', $current_lang) ?>
-            </a>
-            
+            <div class="logo">
+                    <strong><img src="./vendor/src/imgs/favicon.svg" alt="logo" class="src">
+                    <?= t('page_title', $current_lang) ?></strong>
+            </div>
             <div class="d-flex align-items-center">
                 <a href="index.php" class="btn btn-outline-secondary me-3">
                     <i class="fas fa-arrow-left me-1"></i>
@@ -462,29 +464,32 @@ function isColorDark($color) {
 
     <div class="container">
         <!-- Success/Error Messages -->
-        <?php if (isset($_GET['success'])): ?>
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="fas fa-check-circle me-2"></i>
-                <?= t('company_added', $current_lang) ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
-
-        <?php if (isset($_GET['edited'])): ?>
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="fas fa-edit me-2"></i>
-                <?= t('company_modified', $current_lang) ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
-
-        <?php if (isset($_GET['deleted'])): ?>
-            <div class="alert alert-info alert-dismissible fade show" role="alert">
-                <i class="fas fa-trash me-2"></i>
-                <?= t('company_deleted', $current_lang) ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
+        <?php 
+        // Check for flash messages and clear them after displaying
+        if (isset($_SESSION['flash_message'])) {
+            $flash_message = $_SESSION['flash_message'];
+            unset($_SESSION['flash_message']); // Clear the message
+            
+            if ($flash_message === 'success'): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <?= t('company_added', $current_lang) ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <?php elseif ($flash_message === 'edited'): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-edit me-2"></i>
+                    <?= t('company_modified', $current_lang) ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <?php elseif ($flash_message === 'deleted'): ?>
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <i class="fas fa-trash me-2"></i>
+                    <?= t('company_deleted', $current_lang) ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <?php endif;
+        } ?>
 
         <?php if (isset($error)): ?>
             <div class="alert alert-danger alert-dismissible fade show" role="alert">

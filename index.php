@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once 'config.php';
 require_once 'translations.php';
 
@@ -17,8 +18,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = $pdo->prepare("INSERT INTO extra_hours (company_id, date, hours, description) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE hours = ?, description = ?");
                 $stmt->execute([$company_id, $date, $hours, $description, $hours, $description]);
                 
-                // Redirect to avoid form resubmission
-                header('Location: index.php?success=1');
+                // Set flash message and redirect
+                $_SESSION['flash_message'] = 'success';
+                header('Location: index.php');
                 exit;
                 
             case 'delete':
@@ -26,8 +28,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = $pdo->prepare("DELETE FROM extra_hours WHERE id = ?");
                 $stmt->execute([$id]);
                 
-                // Redirect to avoid form resubmission
-                header('Location: index.php?deleted=1');
+                // Set flash message and redirect
+                $_SESSION['flash_message'] = 'deleted';
+                header('Location: index.php');
                 exit;
                 
             case 'edit':
@@ -40,8 +43,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $stmt = $pdo->prepare("UPDATE extra_hours SET company_id = ?, date = ?, hours = ?, description = ? WHERE id = ?");
                 $stmt->execute([$company_id, $date, $hours, $description, $id]);
                 
-                // Redirect to avoid form resubmission
-                header('Location: index.php?edited=1');
+                // Set flash message and redirect
+                $_SESSION['flash_message'] = 'edited';
+                header('Location: index.php');
                 exit;
         }
     }
@@ -124,14 +128,17 @@ function isColorDark($color) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestore Ore Straordinarie</title>
+    <link rel="icon" href="./vendor/src/imgs/favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="./vendor/src/imgs/favicon.svg" sizes="any" type="image/svg+xml">
+    <link rel="shortcut icon" href="./vendor/src/imgs/favicon.svg" type="image/svg+xml">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-pastel: #f8b5d3;
-            --secondary-pastel: #b8e6b8;
-            --accent-pastel: #ffd6a5;
-            --light-pastel: #f0f8ff;
+            --primary-pastel: #FFEDF3;
+            --secondary-pastel: #ADEED9;
+            --accent-pastel: #56DFCF;
+            --light-pastel: #0ABAB5;
             --dark-text: #2c3e50;
             --shadow-soft: rgba(0, 0, 0, 0.1);
             --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -483,11 +490,10 @@ function isColorDark($color) {
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand" href="index.php">
-                <i class="fas fa-clock me-2"></i>
-                <?= t('page_title', $current_lang) ?>
-            </a>
-            
+        <div class="logo">
+                    <strong><img src="./vendor/src/imgs/favicon.svg" alt="logo" class="src">
+                    <?= t('page_title', $current_lang) ?></strong>
+            </div>
             <div class="d-flex align-items-center">
                 <a href="manage_companies.php" class="btn btn-outline-secondary me-3">
                     <i class="fas fa-building me-1"></i>
@@ -510,29 +516,32 @@ function isColorDark($color) {
 
     <div class="container">
         <!-- Success/Error Messages -->
-        <?php if (isset($_GET['success'])): ?>
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="fas fa-check-circle me-2"></i>
-                <?= t('record_added', $current_lang) ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
-
-        <?php if (isset($_GET['deleted'])): ?>
-            <div class="alert alert-info alert-dismissible fade show" role="alert">
-                <i class="fas fa-trash me-2"></i>
-                <?= t('record_deleted', $current_lang) ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
-
-        <?php if (isset($_GET['edited'])): ?>
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <i class="fas fa-edit me-2"></i>
-                <?= t('record_edited', $current_lang) ?>
-                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-            </div>
-        <?php endif; ?>
+        <?php 
+        // Check for flash messages and clear them after displaying
+        if (isset($_SESSION['flash_message'])) {
+            $flash_message = $_SESSION['flash_message'];
+            unset($_SESSION['flash_message']); // Clear the message
+            
+            if ($flash_message === 'success'): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle me-2"></i>
+                    <?= t('record_added', $current_lang) ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <?php elseif ($flash_message === 'deleted'): ?>
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <i class="fas fa-trash me-2"></i>
+                    <?= t('record_deleted', $current_lang) ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <?php elseif ($flash_message === 'edited'): ?>
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-edit me-2"></i>
+                    <?= t('record_edited', $current_lang) ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            <?php endif;
+        } ?>
 
         <!-- Add Overtime Form -->
         <div class="card fade-in-up mb-4">
@@ -588,75 +597,76 @@ function isColorDark($color) {
             </div>
         </div>
 
-        <!-- Current Week Section -->
-        <div class="card slide-in-left mb-4">
-            <div class="card-header">
-                <i class="fas fa-calendar-week me-2"></i>
-                <?= t('current_week', $current_lang) ?>
-            </div>
-            <div class="card-body">
-                <?php if (empty($week_data)): ?>
-                    <p class="text-muted mb-0">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <?= t('no_overtime_week', $current_lang) ?>
-                    </p>
-                <?php else: ?>
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th><?= t('company', $current_lang) ?></th>
-                                    <th><?= t('date', $current_lang) ?></th>
-                                    <th><?= t('hours', $current_lang) ?></th>
-                                    <th><?= t('description', $current_lang) ?></th>
-                                    <th><?= t('actions', $current_lang) ?></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php foreach ($week_data as $record): ?>
-                                    <tr>
-                                        <td>
-                                            <span class="badge company-badge" style="<?= getCompanyBadgeStyle($company_colors[$record['company_id']]) ?>">
-                                                <?= htmlspecialchars($record['company_name']) ?>
-                                            </span>
-                                        </td>
-                                        <td><?= date('d/m/Y', strtotime($record['date'])) ?></td>
-                                        <td><strong><?= $record['hours'] ?></strong></td>
-                                        <td><?= htmlspecialchars($record['description'] ?? '') ?></td>
-                                        <td>
-                                            <button class="btn btn-sm btn-outline-secondary me-1" onclick="editRecord(<?= $record['id'] ?>, '<?= $record['company_id'] ?>', '<?= $record['date'] ?>', <?= $record['hours'] ?>, '<?= htmlspecialchars($record['description'] ?? '') ?>')">
-                                                <i class="fas fa-edit"></i>
-                                            </button>
-                                            <button class="btn btn-sm btn-outline-secondary" onclick="deleteRecord(<?= $record['id'] ?>)">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            </tbody>
-                        </table>
+        <!-- Current Week and Monthly Summary Row -->
+        <div class="row">
+            <!-- Current Week Section -->
+            <div class="col-md-6 mb-4">
+                <div class="card slide-in-left h-100">
+                    <div class="card-header">
+                        <i class="fas fa-calendar-week me-2"></i>
+                        <?= t('current_week', $current_lang) ?>
                     </div>
-                <?php endif; ?>
-            </div>
-        </div>
-
-        <!-- Monthly Summary -->
-        <div class="card scale-in mb-4">
-            <div class="card-header">
-                <i class="fas fa-chart-bar me-2"></i>
-                <?= t('monthly_summary', $current_lang) ?> - <?= $current_month_name ?>
-            </div>
-            <div class="card-body">
-                <?php if (empty($monthly_summary)): ?>
-                    <p class="text-muted mb-0">
-                        <i class="fas fa-info-circle me-2"></i>
-                        <?= t('no_data_month', $current_lang) ?>
-                    </p>
-                <?php else: ?>
-                    <div class="row">
-                        <div class="col-md-8">
+                    <div class="card-body">
+                        <?php if (empty($week_data)): ?>
+                            <p class="text-muted mb-0">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <?= t('no_overtime_week', $current_lang) ?>
+                            </p>
+                        <?php else: ?>
                             <div class="table-responsive">
-                                <table class="table">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th><?= t('company', $current_lang) ?></th>
+                                            <th><?= t('date', $current_lang) ?></th>
+                                            <th><?= t('hours', $current_lang) ?></th>
+                                            <th><?= t('actions', $current_lang) ?></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($week_data as $record): ?>
+                                            <tr>
+                                                <td>
+                                                    <span class="badge company-badge" style="<?= getCompanyBadgeStyle($company_colors[$record['company_id']]) ?>">
+                                                        <?= htmlspecialchars($record['company_name']) ?>
+                                                    </span>
+                                                </td>
+                                                <td><?= date('d/m/Y', strtotime($record['date'])) ?></td>
+                                                <td><strong><?= $record['hours'] ?></strong></td>
+                                                <td>
+                                                    <button class="btn btn-sm btn-outline-secondary me-1" onclick="editRecord(<?= $record['id'] ?>, '<?= $record['company_id'] ?>', '<?= $record['date'] ?>', <?= $record['hours'] ?>, '<?= htmlspecialchars($record['description'] ?? '') ?>')">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
+                                                    <button class="btn btn-sm btn-outline-secondary" onclick="deleteRecord(<?= $record['id'] ?>)">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monthly Summary -->
+            <div class="col-md-6 mb-4">
+                <div class="card scale-in h-100">
+                    <div class="card-header">
+                        <i class="fas fa-chart-bar me-2"></i>
+                        <?= t('monthly_summary', $current_lang) ?> - <?= $current_month_name ?>
+                    </div>
+                    <div class="card-body">
+                        <?php if (empty($monthly_summary)): ?>
+                            <p class="text-muted mb-0">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <?= t('no_data_month', $current_lang) ?>
+                            </p>
+                        <?php else: ?>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
                                     <thead>
                                         <tr>
                                             <th><?= t('company', $current_lang) ?></th>
@@ -683,19 +693,20 @@ function isColorDark($color) {
                                     </tbody>
                                 </table>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="summary-card">
-                                <h5><i class="fas fa-download me-2"></i><?= t('export_excel', $current_lang) ?></h5>
-                                <p class="mb-3"><?= t('monthly_summary', $current_lang) ?> - <?= $current_month_name ?></p>
-                                <a href="export_excel.php?month=<?= $current_month ?>" class="btn btn-export">
-                                    <i class="fas fa-file-excel me-2"></i>
-                                    <?= t('export_excel', $current_lang) ?>
-                                </a>
+                            
+                            <div class="mt-3">
+                                <div class="summary-card">
+                                    <h6><i class="fas fa-download me-2"></i><?= t('export_excel', $current_lang) ?></h6>
+                                    <p class="mb-2 small"><?= t('monthly_summary', $current_lang) ?> - <?= $current_month_name ?></p>
+                                    <a href="export_excel.php?month=<?= $current_month ?>" class="btn btn-export btn-sm">
+                                        <i class="fas fa-file-excel me-2"></i>
+                                        <?= t('export_excel', $current_lang) ?>
+                                    </a>
+                                </div>
                             </div>
-                        </div>
+                        <?php endif; ?>
                     </div>
-                <?php endif; ?>
+                </div>
             </div>
         </div>
     </div>
