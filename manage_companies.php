@@ -112,7 +112,7 @@ function isColorDark($color) {
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --primary-pastel: #FFEDF3;
+            --primary-pastel:rgb(143, 240, 162);
             --secondary-pastel: #ADEED9;
             --accent-pastel: #56DFCF;
             --light-pastel: #0ABAB5;
