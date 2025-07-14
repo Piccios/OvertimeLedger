@@ -5,6 +5,9 @@ define('DB_NAME', 'straordinari');
 define('DB_USER', 'root');
 define('DB_PASS', '');
 
+// Include utility functions
+require_once 'utils.php';
+
 // Creating database connection
 function getDBConnection() {
     static $pdo = null;
@@ -32,9 +35,6 @@ function getDBConnection() {
     return $pdo;
 }
 
-// Get current language from URL parameter or default
-$current_lang = $_GET['lang'] ?? 'it';
-if (!in_array($current_lang, ['it', 'en'])) {
-    $current_lang = 'it';
-}
+// Get current language
+$current_lang = getCurrentLanguage();
 ?> 
