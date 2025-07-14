@@ -43,7 +43,8 @@ $translations = [
         'cancel' => 'Annulla',
         'save_changes' => 'Salva Modifiche',
         'dashboard' => 'Dashboard',
-        'statistics' => 'Statistiche'
+        'statistics' => 'Statistiche',
+        'export_excel' => 'Esporta Excel'
     ],
     'en' => [
         'page_title' => 'Overtime Hours Manager',
@@ -79,7 +80,8 @@ $translations = [
         'cancel' => 'Cancel',
         'save_changes' => 'Save Changes',
         'dashboard' => 'Dashboard',
-        'statistics' => 'Statistics'
+        'statistics' => 'Statistics',
+        'export_excel' => 'Export Excel'
     ]
 ];
 
@@ -404,6 +406,11 @@ $current_tab = $_GET['tab'] ?? 'main';
                     <?php if (empty($monthly_summary)): ?>
                         <p class="text-muted"><?= t('no_data_month', $current_lang) ?></p>
                     <?php else: ?>
+                        <div class="mb-3 text-end">
+                            <a href="export.php" class="btn btn-export">
+                                <i class="fas fa-file-excel me-2"></i><?= t('export_excel', $current_lang) ?>
+                            </a>
+                        </div>
                         <div class="row">
                             <?php foreach ($monthly_summary as $summary): ?>
                                 <div class="col-md-4 mb-3">

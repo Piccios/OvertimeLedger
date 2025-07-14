@@ -1,0 +1,12 @@
+{
+    "name": "straordinari/gestore",
+    "description": "Gestore ore straordinarie",
+    "require": {
+        "phpoffice/phpspreadsheet": "1.29"
+    },
+    "authors": [
+        {
+            "name": "Utente"
+        }
+    ]
+}
