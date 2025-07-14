@@ -1,6 +1,6 @@
 # Overtime Hours Manager
 
-A modern, responsive web application for tracking overtime hours across multiple companies. Built with PHP, MySQL, and Bootstrap.
+A modern, responsive web application for tracking overtime hours across multiple companies. Built with PHP, MySQL, and Bootstrap with a beautiful neon cyberpunk theme.
 
 ## Features
 
@@ -9,7 +9,9 @@ A modern, responsive web application for tracking overtime hours across multiple
 - ✅ **Excel Export** - Generate professional Excel reports
 - ✅ **Responsive Design** - Works on desktop, tablet, and mobile
 - ✅ **Real-time Statistics** - Weekly and monthly summaries
-- ✅ **Modern UI** - Beautiful gradient design with smooth animations
+- ✅ **Modern Cyberpunk UI** - Beautiful neon theme with glass effects and smooth animations
+- ✅ **Clean Table Design** - Borderless tables with hover effects
+- ✅ **Export Functionality** - Excel export with detailed monthly reports
 
 ## Installation
 
@@ -18,7 +20,6 @@ A modern, responsive web application for tracking overtime hours across multiple
 - PHP 8.1 or higher
 - MySQL 5.7 or higher
 - Web server (Apache/Nginx)
-- Composer (for PhpSpreadsheet dependency)
 
 ### Setup Instructions
 
@@ -28,37 +29,22 @@ A modern, responsive web application for tracking overtime hours across multiple
    cd straordinari
    ```
 
-2. **Install dependencies**
-   ```bash
-   composer install
-   ```
-
-3. **Configure the database**
+2. **Configure the database**
    - Create a MySQL database named `straordinari`
-   - Import the `database.sql` file to create tables
-   - Run the `update_database.sql` file to add the color column
+   - Import the database structure (see Database Setup section)
 
-4. **Configure database connection**
+3. **Configure database connection**
    - Edit `config.php` with your database credentials
    - Update the database host, name, username, and password
 
-5. **Set up your web server**
+4. **Set up your web server**
    - Point your web server to the project directory
    - Ensure PHP has write permissions for the directory
 
 ## Database Setup
 
-### Initial Setup
-```sql
--- Import the main database structure
-mysql -u your_username -p straordinari < database.sql
-
--- Add the color column for companies
-mysql -u your_username -p straordinari < update_database.sql
-```
-
 ### Manual Database Creation
-If you prefer to create the database manually:
+Create the database manually:
 
 ```sql
 CREATE DATABASE straordinari;
@@ -68,7 +54,7 @@ USE straordinari;
 CREATE TABLE companies (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
-    color VARCHAR(7) DEFAULT '#3b82f6',
+    color VARCHAR(7) DEFAULT '#39ff14',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -125,6 +111,22 @@ CREATE INDEX idx_extra_hours_company ON extra_hours(company_id);
 - Choose between Italian (🇮🇹) and English (🇺🇸)
 - Language preference is maintained during navigation
 
+## UI Features
+
+### Modern Design
+- **Neon Cyberpunk Theme** - Green and cyan neon colors with glass effects
+- **Smooth Animations** - Fade-in, slide-in, and scale animations on scroll
+- **Glass Morphism** - Translucent backgrounds with backdrop blur
+- **Borderless Tables** - Clean, modern table design without borders
+- **Hover Effects** - Subtle background changes on table row hover
+- **Responsive Layout** - Optimized for all device sizes
+
+### Color Scheme
+- **Primary**: Neon Green (#39ff14)
+- **Secondary**: Neon Cyan (#00ffff)
+- **Accent**: Neon Pink (#ff00ff)
+- **Background**: Dark theme with glass effects
+
 ## File Structure
 
 ```
@@ -133,9 +135,9 @@ straordinari/
 ├── manage_companies.php   # Company management interface
 ├── export_excel.php       # Excel export functionality
 ├── config.php             # Database configuration
+├── utils.php              # Common utility functions
 ├── translations.php       # Language translations
-├── database.sql           # Initial database structure
-├── update_database.sql    # Database updates for colors
+├── styles.css             # Modern CSS with neon theme
 ├── composer.json          # PHP dependencies
 ├── vendor/                # Composer packages
 └── README.md             # This file
@@ -151,9 +153,11 @@ straordinari/
 
 ### Styling
 
-- Main styles are in the `<style>` sections of each PHP file
+- Main styles are in `styles.css`
 - Uses Bootstrap 5 for responsive design
-- Custom gradients and animations included
+- Custom neon cyberpunk theme with glass effects
+- Smooth animations and hover effects
+- Borderless table design
 
 ### Database Schema
 
@@ -179,25 +183,33 @@ The application uses a simple two-table structure:
 
 ### Common Issues
 
-1. **Composer dependency issues**
-   - Ensure PHP version is 8.1+
-   - Run `composer update` to refresh dependencies
-
-2. **Database connection errors**
+1. **Database connection errors**
    - Check `config.php` credentials
    - Ensure MySQL service is running
    - Verify database exists
 
-3. **Excel export not working**
-   - Check PhpSpreadsheet installation
-   - Ensure proper file permissions
+2. **Excel export not working**
+   - Check file permissions
    - Verify PHP has enough memory
+
+3. **Styling issues**
+   - Clear browser cache
+   - Check if CSS file is loading properly
 
 ### Performance Tips
 
 - Add database indexes for large datasets
 - Consider caching for frequently accessed data
 - Optimize images and assets for faster loading
+
+## Recent Updates
+
+### UI Improvements
+- **Borderless Tables**: Removed table borders for cleaner look
+- **Simplified Hover Effects**: Removed scaling animations from table rows
+- **Enhanced Export Button**: Updated styling with purple accent colors
+- **Glass Effects**: Improved backdrop blur and transparency
+- **Smooth Animations**: Optimized scroll-triggered animations
 
 ## Contributing
 
