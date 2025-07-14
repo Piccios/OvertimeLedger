@@ -1,235 +1,128 @@
-# Overtime Hours Manager
+# Gestore Ore Straordinarie
 
-A modern, responsive web application for tracking overtime hours across multiple companies. Built with PHP, MySQL, and Bootstrap with a beautiful neon cyberpunk theme.
+Un'applicazione web moderna per la gestione delle ore straordinarie con interfaccia multilingua e design cyberpunk.
 
-## Features
+## 🚀 Caratteristiche
 
-- ✅ **Dynamic Company Management** - Add, edit, and delete companies with custom colors
-- ✅ **Multi-language Support** - Italian and English interfaces
-- ✅ **Excel Export** - Generate professional Excel reports
-- ✅ **Responsive Design** - Works on desktop, tablet, and mobile
-- ✅ **Real-time Statistics** - Weekly and monthly summaries
-- ✅ **Modern Cyberpunk UI** - Beautiful neon theme with glass effects and smooth animations
-- ✅ **Clean Table Design** - Borderless tables with hover effects
-- ✅ **Export Functionality** - Excel export with detailed monthly reports
+- **Interfaccia Multilingua**: Supporto per Italiano e Inglese
+- **Design Cyberpunk**: Stile futuristico con colori neon
+- **Gestione Aziende**: Aggiunta, modifica e eliminazione di aziende
+- **Tracciamento Ore**: Registrazione dettagliata delle ore straordinarie
+- **Riepilogo Mensile**: Visualizzazione delle statistiche mensili
+- **Responsive Design**: Ottimizzato per tutti i dispositivi
+- **Logo e Favicon**: Branding personalizzato con logo SVG
 
-## Installation
+## 🎨 Design
 
-### Prerequisites
+- **Tema**: Cyberpunk con colori neon (verde, blu, viola)
+- **Logo**: SVG personalizzato con effetti neon
+- **Favicon**: Icona SVG/PNG per il browser
+- **Animazioni**: Transizioni fluide e effetti hover
+- **Navigazione**: Bottoni contestuali in base alla pagina corrente
 
-- PHP 8.1 or higher
-- MySQL 5.7 or higher
-- Web server (Apache/Nginx)
-
-### Setup Instructions
-
-1. **Clone or download the project**
-   ```bash
-   git clone <your-repo-url>
-   cd straordinari
-   ```
-
-2. **Configure the database**
-   - Create a MySQL database named `straordinari`
-   - Import the database structure (see Database Setup section)
-
-3. **Configure database connection**
-   - Edit `config.php` with your database credentials
-   - Update the database host, name, username, and password
-
-4. **Set up your web server**
-   - Point your web server to the project directory
-   - Ensure PHP has write permissions for the directory
-
-## Database Setup
-
-### Manual Database Creation
-Create the database manually:
-
-```sql
-CREATE DATABASE straordinari;
-USE straordinari;
-
--- Companies table
-CREATE TABLE companies (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL UNIQUE,
-    color VARCHAR(7) DEFAULT '#39ff14',
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
--- Extra hours table
-CREATE TABLE extra_hours (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    company_id INT NOT NULL,
-    date DATE NOT NULL,
-    hours DECIMAL(4,2) NOT NULL,
-    description TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (company_id) REFERENCES companies(id) ON DELETE CASCADE,
-    UNIQUE KEY unique_company_date (company_id, date)
-);
-
--- Indexes for performance
-CREATE INDEX idx_extra_hours_date ON extra_hours(date);
-CREATE INDEX idx_extra_hours_company ON extra_hours(company_id);
-```
-
-## Usage
-
-### Getting Started
-
-1. **Access the application** through your web browser
-2. **Add your first company** by clicking "Manage Companies"
-3. **Start tracking overtime** by adding records in the main interface
-
-### Adding Companies
-
-1. Click "Manage Companies" in the top-left corner
-2. Fill in the company name and choose a color
-3. Click the save button
-4. Companies can be edited or deleted (if they have no records)
-
-### Tracking Overtime
-
-1. Select a company from the dropdown
-2. Choose the date
-3. Enter the number of hours (supports decimals like 2.5)
-4. Add an optional description
-5. Click save
-
-### Exporting Data
-
-- Click "Export Excel" in the monthly summary section
-- The file will be downloaded with the current month's data
-- Includes detailed records and company summaries
-
-### Language Switching
-
-- Use the language selector in the top-right corner
-- Choose between Italian (🇮🇹) and English (🇺🇸)
-- Language preference is maintained during navigation
-
-## UI Features
-
-### Modern Design
-- **Neon Cyberpunk Theme** - Green and cyan neon colors with glass effects
-- **Smooth Animations** - Fade-in, slide-in, and scale animations on scroll
-- **Glass Morphism** - Translucent backgrounds with backdrop blur
-- **Borderless Tables** - Clean, modern table design without borders
-- **Hover Effects** - Subtle background changes on table row hover
-- **Responsive Layout** - Optimized for all device sizes
-
-### Color Scheme
-- **Primary**: Neon Green (#39ff14)
-- **Secondary**: Neon Cyan (#00ffff)
-- **Accent**: Neon Pink (#ff00ff)
-- **Background**: Dark theme with glass effects
-
-## File Structure
+## 📁 Struttura Progetto
 
 ```
 straordinari/
-├── index.php              # Main application interface
-├── manage_companies.php   # Company management interface
-├── export_excel.php       # Excel export functionality
-├── config.php             # Database configuration
-├── utils.php              # Common utility functions
-├── translations.php       # Language translations
-├── styles.css             # Modern CSS with neon theme
-├── composer.json          # PHP dependencies
-├── vendor/                # Composer packages
-└── README.md             # This file
+├── index.php              # File principale dell'applicazione
+├── config.php             # Configurazione database
+├── database.sql           # Schema database
+├── style/
+│   └── styles.css        # Stili CSS personalizzati
+├── images/
+│   ├── logo.svg          # Logo dell'applicazione
+│   └── favicon.svg       # Favicon SVG
+└── README.md             # Documentazione
 ```
 
-## Customization
+## 🛠️ Installazione
 
-### Adding New Languages
+1. **Clona il repository**:
+   ```bash
+   git clone [repository-url]
+   cd straordinari
+   ```
 
-1. Edit `translations.php`
-2. Add a new language array (e.g., `'es' => [...]`)
-3. Add the language option to the UI
+2. **Configura il database**:
+   - Importa `database.sql` nel tuo database MySQL
+   - Modifica `config.php` con le credenziali del database
 
-### Styling
+3. **Avvia il server**:
+   ```bash
+   php -S localhost:8000
+   ```
 
-- Main styles are in `styles.css`
-- Uses Bootstrap 5 for responsive design
-- Custom neon cyberpunk theme with glass effects
-- Smooth animations and hover effects
-- Borderless table design
+4. **Apri nel browser**:
+   ```
+   http://localhost:8000
+   ```
 
-### Database Schema
+## 🎯 Funzionalità Principali
 
-The application uses a simple two-table structure:
-- **companies**: Stores company information and colors
-- **extra_hours**: Stores overtime records with foreign key to companies
+### Dashboard Principale
+- Visualizzazione ore straordinarie della settimana corrente
+- Form per aggiungere nuove ore straordinarie
+- Statistiche rapide
 
-## Security Features
+### Gestione Aziende
+- Aggiunta nuove aziende
+- Modifica informazioni aziende esistenti
+- Eliminazione aziende (con conferma)
 
-- SQL injection protection with prepared statements
-- XSS protection with `htmlspecialchars()`
-- Input validation and sanitization
-- Foreign key constraints for data integrity
+### Riepilogo Mensile
+- Statistiche dettagliate per mese
+- Grafici e tabelle riassuntive
+- Filtri per periodo
 
-## Browser Support
+## 🌐 Multilingua
 
-- Chrome/Chromium (recommended)
-- Firefox
-- Safari
-- Edge
+L'applicazione supporta:
+- **Italiano** (default)
+- **Inglese**
 
-## Troubleshooting
+Il cambio lingua è disponibile tramite il bottone nella navbar.
 
-### Common Issues
+## 🎨 Personalizzazione
 
-1. **Database connection errors**
-   - Check `config.php` credentials
-   - Ensure MySQL service is running
-   - Verify database exists
+### Colori
+I colori principali sono definiti come variabili CSS:
+- `--neon-green`: #39ff14
+- `--neon-blue`: #00d4ff
+- `--neon-purple`: #bc13fe
 
-2. **Excel export not working**
-   - Check file permissions
-   - Verify PHP has enough memory
+### Logo
+Il logo è un file SVG personalizzato con effetti neon che si adatta al tema cyberpunk.
 
-3. **Styling issues**
-   - Clear browser cache
-   - Check if CSS file is loading properly
+## 📱 Responsive
 
-### Performance Tips
+L'applicazione è completamente responsive e ottimizzata per:
+- Desktop (1200px+)
+- Tablet (768px - 1199px)
+- Mobile (< 768px)
 
-- Add database indexes for large datasets
-- Consider caching for frequently accessed data
-- Optimize images and assets for faster loading
+## 🔧 Tecnologie Utilizzate
 
-## Recent Updates
+- **Backend**: PHP 7.4+
+- **Database**: MySQL 5.7+
+- **Frontend**: HTML5, CSS3, JavaScript
+- **Framework**: Bootstrap 5.3.0
+- **Icone**: Font Awesome 6.0.0
+- **Design**: CSS personalizzato con tema cyberpunk
 
-### UI Improvements
-- **Borderless Tables**: Removed table borders for cleaner look
-- **Simplified Hover Effects**: Removed scaling animations from table rows
-- **Enhanced Export Button**: Updated styling with purple accent colors
-- **Glass Effects**: Improved backdrop blur and transparency
-- **Smooth Animations**: Optimized scroll-triggered animations
+## 📄 Licenza
 
-## Contributing
+Questo progetto è rilasciato sotto licenza MIT.
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+## 🤝 Contributi
 
-## License
+I contributi sono benvenuti! Per contribuire:
 
-This project is open source and available under the [MIT License](LICENSE).
+1. Fai un fork del progetto
+2. Crea un branch per la tua feature
+3. Committa le modifiche
+4. Pusha al branch
+5. Apri una Pull Request
 
-## Support
+## 📞 Supporto
 
-For issues and questions:
-- Check the troubleshooting section above
-- Review the code comments for implementation details
-- Create an issue in the repository
-
----
-
-**Happy overtime tracking!** 🕐✨ 
+Per supporto o domande, apri una issue su GitHub. 
