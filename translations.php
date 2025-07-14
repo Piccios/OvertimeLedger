@@ -28,13 +28,13 @@ $translations = [
         'monthly_summary' => 'Riepilogo Mensile',
         'export_excel' => 'Esporta Excel',
         'no_data_month' => 'Nessun dato per questo mese.',
-        'total_monthly_hours' => 'Totale Ore Mensili',
-        'summary_by_company' => 'Riepilogo per Azienda',
+        'total' => 'Totali',
+        'summary' => 'Riepilogo',
         'of_total' => 'del totale',
         
         // Modal
         'edit_record' => 'Modifica Record',
-        'edit_description_optional' => 'Descrizione (Opzionale)',
+        'edit_description' => 'Descrizione (Opzionale)',
         'cancel' => 'Annulla',
         'save_changes' => 'Salva Modifiche',
         
