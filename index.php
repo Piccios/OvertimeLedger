@@ -343,92 +343,98 @@ $current_tab = $_GET['tab'] ?? 'main';
                 </div>
             </div>
 
-            <!-- Current Week Data -->
-            <div class="card slide-in-left mb-4">
-                <div class="card-header">
-                    <i class="fas fa-calendar-week me-2"></i>
-                    <?= t('current_week', $current_lang) ?>
-                </div>
-                <div class="card-body">
-                    <?php if (empty($week_data)): ?>
-                        <p class="text-muted"><?= t('no_overtime_week', $current_lang) ?></p>
-                    <?php else: ?>
-                        <div class="table-responsive">
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th><?= t('date', $current_lang) ?></th>
-                                        <th><?= t('company', $current_lang) ?></th>
-                                        <th><?= t('hours', $current_lang) ?></th>
-                                        <th><?= t('description', $current_lang) ?></th>
-                                        <th><?= t('actions', $current_lang) ?></th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <?php foreach ($week_data as $record): ?>
-                                        <tr>
-                                            <td><?= date('d/m/Y', strtotime($record['date'])) ?></td>
-                                            <td>
-                                                <span class="badge" style="background-color: <?= $company_colors[$record['company_id']] ?>; color: white;">
-                                                    <?= htmlspecialchars($record['company_name']) ?>
-                                                </span>
-                                            </td>
-                                            <td><?= $record['hours'] ?></td>
-                                            <td><?= htmlspecialchars($record['description'] ?: '-') ?></td>
-                                            <td>
-                                                <button class="btn btn-sm btn-outline-primary" onclick="editRecord(<?= $record['id'] ?>, '<?= $record['company_id'] ?>', '<?= $record['date'] ?>', <?= $record['hours'] ?>, '<?= htmlspecialchars($record['description']) ?>')">
-                                                    <i class="fas fa-edit"></i>
-                                                </button>
-                                                <form method="POST" action="" style="display: inline;">
-                                                    <input type="hidden" name="action" value="delete">
-                                                    <input type="hidden" name="id" value="<?= $record['id'] ?>">
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('<?= t('confirm_delete', $current_lang) ?>')">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                    <?php endforeach; ?>
-                                </tbody>
-                            </table>
+            <!-- Raggruppamento in una row -->
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <!-- Current Week Data -->
+                    <div class="card slide-in-left h-100">
+                        <div class="card-header">
+                            <i class="fas fa-calendar-week me-2"></i>
+                            <?= t('current_week', $current_lang) ?>
                         </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <!-- Monthly Summary -->
-            <div class="card slide-in-left">
-                <div class="card-header">
-                    <i class="fas fa-chart-bar me-2"></i>
-                    <?= t('monthly_summary', $current_lang) ?>
-                </div>
-                <div class="card-body">
-                    <?php if (empty($monthly_summary)): ?>
-                        <p class="text-muted"><?= t('no_data_month', $current_lang) ?></p>
-                    <?php else: ?>
-                        <div class="mb-3 text-end">
-                            <a href="export.php" class="btn btn-export">
-                                <i class="fas fa-file-excel me-2"></i><?= t('export_excel', $current_lang) ?>
-                            </a>
-                        </div>
-                        <div class="row">
-                            <?php foreach ($monthly_summary as $summary): ?>
-                                <div class="col-md-4 mb-3">
-                                    <div class="card">
-                                        <div class="card-body text-center">
-                                            <h5 class="card-title">
-                                                <span class="badge" style="background-color: <?= $summary['company_color'] ?>; color: white;">
-                                                    <?= htmlspecialchars($summary['company_name']) ?>
-                                                </span>
-                                            </h5>
-                                            <h3 class="text-primary"><?= $summary['total_hours'] ?></h3>
-                                            <small class="text-muted"><?= t('hours', $current_lang) ?></small>
-                                        </div>
-                                    </div>
+                        <div class="card-body">
+                            <?php if (empty($week_data)): ?>
+                                <p class="text-muted"><?= t('no_overtime_week', $current_lang) ?></p>
+                            <?php else: ?>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th><?= t('date', $current_lang) ?></th>
+                                                <th><?= t('company', $current_lang) ?></th>
+                                                <th><?= t('hours', $current_lang) ?></th>
+                                                <th><?= t('description', $current_lang) ?></th>
+                                                <th><?= t('actions', $current_lang) ?></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <?php foreach ($week_data as $record): ?>
+                                                <tr>
+                                                    <td><?= date('d/m/Y', strtotime($record['date'])) ?></td>
+                                                    <td>
+                                                        <span class="badge" style="background-color: <?= $company_colors[$record['company_id']] ?>; color: white;">
+                                                            <?= htmlspecialchars($record['company_name']) ?>
+                                                        </span>
+                                                    </td>
+                                                    <td><?= $record['hours'] ?></td>
+                                                    <td><?= htmlspecialchars($record['description'] ?: '-') ?></td>
+                                                    <td>
+                                                        <button class="btn btn-sm btn-outline-primary" onclick="editRecord(<?= $record['id'] ?>, '<?= $record['company_id'] ?>', '<?= $record['date'] ?>', <?= $record['hours'] ?>, '<?= htmlspecialchars($record['description']) ?>')">
+                                                            <i class="fas fa-edit"></i>
+                                                        </button>
+                                                        <form method="POST" action="" style="display: inline;">
+                                                            <input type="hidden" name="action" value="delete">
+                                                            <input type="hidden" name="id" value="<?= $record['id'] ?>">
+                                                            <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('<?= t('confirm_delete', $current_lang) ?>')">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
                                 </div>
-                            <?php endforeach; ?>
+                            <?php endif; ?>
                         </div>
-                    <?php endif; ?>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <!-- Monthly Summary -->
+                    <div class="card slide-in-left h-100">
+                        <div class="card-header">
+                            <i class="fas fa-chart-bar me-2"></i>
+                            <?= t('monthly_summary', $current_lang) ?>
+                        </div>
+                        <div class="card-body">
+                            <?php if (empty($monthly_summary)): ?>
+                                <p class="text-muted"><?= t('no_data_month', $current_lang) ?></p>
+                            <?php else: ?>
+                                <div class="mb-3 text-end">
+                                    <a href="export.php" class="btn btn-export">
+                                        <i class="fas fa-file-excel me-2"></i><?= t('export_excel', $current_lang) ?>
+                                    </a>
+                                </div>
+                                <div class="row">
+                                    <?php foreach ($monthly_summary as $summary): ?>
+                                        <div class="col-12 mb-3">
+                                            <div class="card">
+                                                <div class="card-body text-center">
+                                                    <h5 class="card-title">
+                                                        <span class="badge" style="background-color: <?= $summary['company_color'] ?>; color: white;">
+                                                            <?= htmlspecialchars($summary['company_name']) ?>
+                                                        </span>
+                                                    </h5>
+                                                    <h3 class="text-primary"><?= $summary['total_hours'] ?></h3>
+                                                    <small class="text-muted"><?= t('hours', $current_lang) ?></small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+                        </div>
+                    </div>
                 </div>
             </div>
 
