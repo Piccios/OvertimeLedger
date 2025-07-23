@@ -220,9 +220,9 @@ $current_tab = $_GET['tab'] ?? 'main';
                 <img src="images/logo.svg" alt="Logo" class="logo-img me-2" width="32" height="32">
                 <strong><?= t('page_title', $current_lang) ?></strong>
                 <?php if($current_tab === 'main'): ?>
-                    <small class="d-block text-muted"><?= t('dashboard', $current_lang) ?></small>
+                    
                 <?php elseif($current_tab === 'companies'): ?>
-                    <small class="d-block text-muted"><?= t('manage_companies', $current_lang) ?></small>
+                
                 <?php endif; ?>
             </div>
             <div class="d-flex align-items-center">
@@ -506,6 +506,9 @@ $current_tab = $_GET['tab'] ?? 'main';
                                                 <form method="POST" action="" style="display: inline;">
                                                     <input type="hidden" name="action" value="delete_company">
                                                     <input type="hidden" name="id" value="<?= $company['id'] ?>">
+                                                    <button class="btn btn-sm btn-outline-primary me-2" onclick="editCompany(<?= $company['id'] ?>, '<?= $company['name'] ?>', '<?= $company['color'] ?>')">
+                                                        <i class="fas fa-edit"></i>
+                                                    </button>
                                                     <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('<?= t('confirm_delete_company', $current_lang) ?>')">
                                                         <i class="fas fa-trash"></i>
                                                     </button>
