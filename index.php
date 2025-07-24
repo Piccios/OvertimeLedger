@@ -1,8 +1,13 @@
 <?php
 session_start();
+require_once 'login/auth.php';
 require_once 'config.php';
 
+// Verifica che l'utente sia loggato
+requireLogin();
+
 $pdo = getDBConnection();
+$user_id = getCurrentUserId();
 
 // Define current language
 $current_lang = $_GET['lang'] ?? 'it';
@@ -100,8 +105,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $hours = $_POST['hours'];
                 $description = $_POST['description'] ?? '';
                 
-                $stmt = $pdo->prepare("INSERT INTO extra_hours (company_id, date, hours, description) VALUES (?, ?, ?, ?) ON DUPLICATE KEY UPDATE hours = ?, description = ?");
-                $stmt->execute([$company_id, $date, $hours, $description, $hours, $description]);
+                $stmt = $pdo->prepare("INSERT INTO extra_hours (company_id, date, hours, description, user_id) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE hours = ?, description = ?");
+                $stmt->execute([$company_id, $date, $hours, $description, $user_id, $hours, $description]);
                 
                 $_SESSION['flash_message'] = 'success';
                 header('Location: index.php');
@@ -109,8 +114,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
             case 'delete':
                 $id = $_POST['id'];
-                $stmt = $pdo->prepare("DELETE FROM extra_hours WHERE id = ?");
-                $stmt->execute([$id]);
+                $stmt = $pdo->prepare("DELETE FROM extra_hours WHERE id = ? AND user_id = ?");
+                $stmt->execute([$id, $user_id]);
                 
                 $_SESSION['flash_message'] = 'deleted';
                 header('Location: index.php');
@@ -123,8 +128,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $hours = $_POST['hours'];
                 $description = $_POST['description'] ?? '';
                 
-                $stmt = $pdo->prepare("UPDATE extra_hours SET company_id = ?, date = ?, hours = ?, description = ? WHERE id = ?");
-                $stmt->execute([$company_id, $date, $hours, $description, $id]);
+                $stmt = $pdo->prepare("UPDATE extra_hours SET company_id = ?, date = ?, hours = ?, description = ? WHERE id = ? AND user_id = ?");
+                $stmt->execute([$company_id, $date, $hours, $description, $id, $user_id]);
                 
                 $_SESSION['flash_message'] = 'edited';
                 header('Location: index.php');
@@ -179,9 +184,10 @@ $stmt = $pdo->prepare("
     FROM extra_hours eh 
     JOIN companies c ON eh.company_id = c.id 
     WHERE eh.date BETWEEN ? AND ? 
+    AND eh.user_id = ?
     ORDER BY eh.date DESC, c.name
 ");
-$stmt->execute([$current_week_start, $current_week_end]);
+$stmt->execute([$current_week_start, $current_week_end, $user_id]);
 $week_data = $stmt->fetchAll();
 
 // Retrieve monthly summary
@@ -191,10 +197,11 @@ $stmt = $pdo->prepare("
     FROM extra_hours eh 
     JOIN companies c ON eh.company_id = c.id 
     WHERE DATE_FORMAT(eh.date, '%Y-%m') = ?
+    AND eh.user_id = ?
     GROUP BY c.id, c.name, c.color
     ORDER BY total_hours DESC
 ");
-$stmt->execute([$current_month]);
+$stmt->execute([$current_month, $user_id]);
 $monthly_summary = $stmt->fetchAll();
 
 $current_tab = $_GET['tab'] ?? 'main';
@@ -240,10 +247,13 @@ $current_tab = $_GET['tab'] ?? 'main';
                     </a>
                 <?php endif; ?>
                 
-                <!-- Language selector always visible -->
-                <a href="?tab=<?= $current_tab ?>&lang=<?= $current_lang === 'it' ? 'en' : 'it' ?>" class="btn language-selector">
+                <!-- Language selector and logout button -->
+                <a href="?tab=<?= $current_tab ?>&lang=<?= $current_lang === 'it' ? 'en' : 'it' ?>" class="btn language-selector me-2">
                     <i class="fas fa-globe me-1"></i>
                     <?= $current_lang === 'it' ? '🇺🇸' : '🇮🇹' ?>
+                </a>
+                <a href="login/logout.php" class="btn btn-outline-secondary">
+                    <i class="fas fa-sign-out-alt"></i>
                 </a>
             </div>
         </div>
@@ -569,9 +579,10 @@ $current_tab = $_GET['tab'] ?? 'main';
                 </form>
             </div>
         </div>
+        <?php echo password_hash('LoreSTRAORDINARI!996', PASSWORD_DEFAULT); ?>  
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function editRecord(id, companyId, date, hours, description) {
             document.getElementById('edit_id').value = id;
