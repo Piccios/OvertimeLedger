@@ -2,7 +2,7 @@
 
 A modern web application for managing overtime hours with a multilingual interface and cyberpunk design.
 
-## 🚀 Features
+## Features
 
 - **Multilingual Interface**: Support for Italian and English
 - **Cyberpunk Design**: Futuristic style with neon colors
@@ -12,7 +12,7 @@ A modern web application for managing overtime hours with a multilingual interfa
 - **Responsive Design**: Optimized for all devices
 - **Logo and Favicon**: Custom branding with SVG logo
 
-## 🎨 Design
+## Design
 
 - **Theme**: Cyberpunk with neon colors (green, blue, purple)
 - **Logo**: Custom SVG with neon effects
@@ -20,7 +20,7 @@ A modern web application for managing overtime hours with a multilingual interfa
 - **Animations**: Smooth transitions and hover effects
 - **Navigation**: Contextual buttons based on the current page
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 straordinari/
@@ -38,7 +38,7 @@ straordinari/
 └── README.md              # Documentation
 ```
 
-## 🛠️ Installation
+## Installation
 
 1. **Clone the repository**:
    ```bash
@@ -65,7 +65,7 @@ straordinari/
    http://localhost:8000
    ```
 
-## 🎯 Main Features
+## Main Features
 
 ### Main Dashboard
 - View overtime hours for the current week
@@ -82,7 +82,7 @@ straordinari/
 - Summary charts and tables
 - Period filters
 
-## 🌐 Multilingual
+## Multilingual
 
 The application supports:
 - **Italian** (default)
@@ -90,7 +90,7 @@ The application supports:
 
 Language switching is available via the button in the navbar.
 
-## 🎨 Customization
+## Customization
 
 ### Colors
 The main colors are defined as CSS variables:
@@ -101,7 +101,7 @@ The main colors are defined as CSS variables:
 ### Logo
 The logo is a custom SVG file with neon effects that matches the cyberpunk theme.
 
-## 📱 Responsive
+## Responsive
 
 The application is fully responsive and optimized for:
 - Desktop (1200px+)
@@ -130,20 +130,3 @@ The project includes a feature to export the current month's overtime hours in E
 - **Technology:** Uses the [PhpSpreadsheet](https://phpspreadsheet.readthedocs.io/) library
 - **How to use:** Visit `export.php` in your browser to download the Excel file
 
-## 📄 License
-
-This project is released under the MIT license.
-
-## 🤝 Contributions
-
-Contributions are welcome! To contribute:
-
-1. Fork the project
-2. Create a branch for your feature
-3. Commit your changes
-4. Push to the branch
-5. Open a Pull Request
-
-## 📞 Support
-
-For support or questions, open an issue on GitHub. 
