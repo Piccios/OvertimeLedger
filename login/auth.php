@@ -36,6 +36,6 @@ function requireLogin() {
 function logout() {
     session_unset();
     session_destroy();
-    header('Location: /login/login.php');
+    header('Location: /straordinari/login/login.php');
     exit;
 } 
