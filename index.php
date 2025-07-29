@@ -49,7 +49,15 @@ $translations = [
         'save_changes' => 'Salva Modifiche',
         'dashboard' => 'Dashboard',
         'statistics' => 'Statistiche',
-        'export_excel' => 'Esporta Excel'
+        'export_excel' => 'Esporta Excel',
+        'register' => 'Registrati',
+        'overtime_type' => 'Tipo Straordinario',
+        'weekday' => 'Feriale (+15%)',
+        'holiday' => 'Festivo (+30%)',
+        'night' => 'Notturno (+50%)',
+        'monthly_earnings' => 'Guadagni Mensili',
+        'gross_salary' => 'Lordo',
+        'net_salary' => 'Netto'
     ],
     'en' => [
         'page_title' => 'Overtime Hours Manager',
@@ -86,13 +94,48 @@ $translations = [
         'save_changes' => 'Save Changes',
         'dashboard' => 'Dashboard',
         'statistics' => 'Statistics',
-        'export_excel' => 'Export Excel'
+        'export_excel' => 'Export Excel',
+        'register' => 'Register',
+        'overtime_type' => 'Overtime Type',
+        'weekday' => 'Weekday (+15%)',
+        'holiday' => 'Holiday (+30%)',
+        'night' => 'Night (+50%)',
+        'monthly_earnings' => 'Monthly Earnings',
+        'gross_salary' => 'Gross Salary',
+        'net_salary' => 'Net Salary'
     ]
 ];
 
 function t($key, $lang = 'it') {
     global $translations;
     return $translations[$lang][$key] ?? $key;
+}
+
+// Costanti per il calcolo del guadagno
+define('PAGA_ORARIA_BASE', 9.72226);
+define('ALIQUOTA_TRATTENUTE', 0.206);
+
+// Maggiorazioni per tipo di straordinario
+$maggiorazioni = [
+    'feriale' => 0.15,  // +15%
+    'festivo' => 0.30,  // +30%
+    'notturno' => 0.50  // +50%
+];
+
+// Funzione per calcolare il guadagno lordo
+function calcolaGuadagnoLordo($ore, $tipo_straordinario) {
+    global $maggiorazioni;
+    
+    $maggiorazione = $maggiorazioni[$tipo_straordinario] ?? 0.15;
+    $paga_oraria_straordinario = PAGA_ORARIA_BASE * (1 + $maggiorazione);
+    $lordo_straordinario = $paga_oraria_straordinario * $ore;
+    
+    return $lordo_straordinario;
+}
+
+// Funzione per calcolare il guadagno netto
+function calcolaGuadagnoNetto($guadagno_lordo) {
+    return $guadagno_lordo * (1 - ALIQUOTA_TRATTENUTE);
 }
 
 // Handle POST requests
@@ -104,9 +147,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $date = $_POST['date'];
                 $hours = $_POST['hours'];
                 $description = $_POST['description'] ?? '';
+                $tipo_straordinario = $_POST['tipo_straordinario'] ?? 'feriale';
                 
-                $stmt = $pdo->prepare("INSERT INTO extra_hours (company_id, date, hours, description, user_id) VALUES (?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE hours = ?, description = ?");
-                $stmt->execute([$company_id, $date, $hours, $description, $user_id, $hours, $description]);
+                $stmt = $pdo->prepare("INSERT INTO extra_hours (company_id, date, hours, description, tipo_straordinario, user_id) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE hours = ?, description = ?, tipo_straordinario = ?");
+                $stmt->execute([$company_id, $date, $hours, $description, $tipo_straordinario, $user_id, $hours, $description, $tipo_straordinario]);
                 
                 $_SESSION['flash_message'] = 'success';
                 header('Location: index.php');
@@ -127,9 +171,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $date = $_POST['date'];
                 $hours = $_POST['hours'];
                 $description = $_POST['description'] ?? '';
+                $tipo_straordinario = $_POST['tipo_straordinario'] ?? 'feriale';
                 
-                $stmt = $pdo->prepare("UPDATE extra_hours SET company_id = ?, date = ?, hours = ?, description = ? WHERE id = ? AND user_id = ?");
-                $stmt->execute([$company_id, $date, $hours, $description, $id, $user_id]);
+                $stmt = $pdo->prepare("UPDATE extra_hours SET company_id = ?, date = ?, hours = ?, description = ?, tipo_straordinario = ? WHERE id = ? AND user_id = ?");
+                $stmt->execute([$company_id, $date, $hours, $description, $tipo_straordinario, $id, $user_id]);
                 
                 $_SESSION['flash_message'] = 'edited';
                 header('Location: index.php');
@@ -190,19 +235,68 @@ $stmt = $pdo->prepare("
 $stmt->execute([$current_week_start, $current_week_end, $user_id]);
 $week_data = $stmt->fetchAll();
 
-// Retrieve monthly summary
+// Retrieve monthly summary with overtime type
 $current_month = date('Y-m');
 $stmt = $pdo->prepare("
-    SELECT c.id as company_id, c.name as company_name, c.color as company_color, SUM(eh.hours) as total_hours
+    SELECT c.id as company_id, c.name as company_name, c.color as company_color, 
+           eh.tipo_straordinario, 
+           SUM(eh.hours) as total_hours
     FROM extra_hours eh 
     JOIN companies c ON eh.company_id = c.id 
     WHERE DATE_FORMAT(eh.date, '%Y-%m') = ?
     AND eh.user_id = ?
-    GROUP BY c.id, c.name, c.color
-    ORDER BY total_hours DESC
+    GROUP BY c.id, c.name, c.color, eh.tipo_straordinario
+    ORDER BY c.name, eh.tipo_straordinario
 ");
 $stmt->execute([$current_month, $user_id]);
-$monthly_summary = $stmt->fetchAll();
+$monthly_data = $stmt->fetchAll();
+
+// Calcola i guadagni totali mensili
+$total_guadagno_lordo = 0;
+$total_guadagno_netto = 0;
+$monthly_summary = [];
+
+foreach ($monthly_data as $data) {
+    $company_id = $data['company_id'];
+    $company_name = $data['company_name'];
+    $company_color = $data['company_color'];
+    $tipo_straordinario = $data['tipo_straordinario'];
+    $ore = $data['total_hours'];
+    
+    // Calcola i guadagni per questo gruppo
+    $guadagno_lordo = calcolaGuadagnoLordo($ore, $tipo_straordinario);
+    $guadagno_netto = calcolaGuadagnoNetto($guadagno_lordo);
+    
+    $total_guadagno_lordo += $guadagno_lordo;
+    $total_guadagno_netto += $guadagno_netto;
+    
+    // Raggruppa per azienda per la visualizzazione
+    if (!isset($monthly_summary[$company_id])) {
+        $monthly_summary[$company_id] = [
+            'company_name' => $company_name,
+            'company_color' => $company_color,
+            'total_hours' => 0,
+            'total_lordo' => 0,
+            'total_netto' => 0,
+            'details' => []
+        ];
+    }
+    
+    $monthly_summary[$company_id]['total_hours'] += $ore;
+    $monthly_summary[$company_id]['total_lordo'] += $guadagno_lordo;
+    $monthly_summary[$company_id]['total_netto'] += $guadagno_netto;
+    $monthly_summary[$company_id]['details'][] = [
+        'tipo' => $tipo_straordinario,
+        'ore' => $ore,
+        'lordo' => $guadagno_lordo,
+        'netto' => $guadagno_netto
+    ];
+}
+
+// Ordina per totale lordo decrescente
+uasort($monthly_summary, function($a, $b) {
+    return $b['total_lordo'] <=> $a['total_lordo'];
+});
 
 $current_tab = $_GET['tab'] ?? 'main';
 ?>
@@ -246,14 +340,19 @@ $current_tab = $_GET['tab'] ?? 'main';
                         <?= t('back_to_main', $current_lang) ?>
                     </a>
                 <?php endif; ?>
+                <a href="monthly_report.php?lang=<?= $current_lang ?>" class="btn btn-outline-secondary me-3">
+                    <i class="fas fa-chart-bar me-1"></i>
+                    <?= t('monthly_summary', $current_lang) ?>
+                </a>
                 
                 <!-- Language selector and logout button -->
+                <a href="login/logout.php" class="btn btn-outline-secondary">
+                    <i class="fas fa-sign-out-alt p-1"></i> 
+                    
+                </a>
                 <a href="?tab=<?= $current_tab ?>&lang=<?= $current_lang === 'it' ? 'en' : 'it' ?>" class="btn language-selector me-2">
                     <i class="fas fa-globe me-1"></i>
                     <?= $current_lang === 'it' ? '🇺🇸' : '🇮🇹' ?>
-                </a>
-                <a href="login/logout.php" class="btn btn-outline-secondary">
-                    <i class="fas fa-sign-out-alt"></i>
                 </a>
             </div>
         </div>
@@ -338,6 +437,19 @@ $current_tab = $_GET['tab'] ?? 'main';
                             </div>
                             
                             <div class="col-md-3 mb-3">
+                                <label for="tipo_straordinario" class="form-label">
+                                    <?= t('overtime_type', $current_lang) ?> *
+                                </label>
+                                <select name="tipo_straordinario" id="tipo_straordinario" class="form-select" required>
+                                    <option value="feriale"><?= t('weekday', $current_lang) ?></option>
+                                    <option value="festivo"><?= t('holiday', $current_lang) ?></option>
+                                    <option value="notturno"><?= t('night', $current_lang) ?></option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
                                 <label for="description" class="form-label">
                                     <?= t('description', $current_lang) ?>
                                 </label>
@@ -353,9 +465,8 @@ $current_tab = $_GET['tab'] ?? 'main';
                 </div>
             </div>
 
-            <!-- Raggruppamento in una row -->
-            <div class="row">
-                <div class="col-md-6 mb-4">
+            <div class="row mb-4">
+                <div class="col-12">
                     <!-- Current Week Data -->
                     <div class="card slide-in-left h-100">
                         <div class="card-header">
@@ -373,12 +484,17 @@ $current_tab = $_GET['tab'] ?? 'main';
                                                 <th><?= t('date', $current_lang) ?></th>
                                                 <th><?= t('company', $current_lang) ?></th>
                                                 <th><?= t('hours', $current_lang) ?></th>
+                                                <th><?= t('overtime_type', $current_lang) ?></th>
                                                 <th><?= t('description', $current_lang) ?></th>
                                                 <th><?= t('actions', $current_lang) ?></th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <?php foreach ($week_data as $record): ?>
+                                            <?php foreach ($week_data as $record): 
+                                                $tipo_straordinario = $record['tipo_straordinario'] ?? 'feriale';
+                                                $guadagno_lordo = calcolaGuadagnoLordo($record['hours'], $tipo_straordinario);
+                                                $guadagno_netto = calcolaGuadagnoNetto($guadagno_lordo);
+                                            ?>
                                                 <tr>
                                                     <td><?= date('d/m/Y', strtotime($record['date'])) ?></td>
                                                     <td>
@@ -386,10 +502,18 @@ $current_tab = $_GET['tab'] ?? 'main';
                                                             <?= htmlspecialchars($record['company_name']) ?>
                                                         </span>
                                                     </td>
-                                                    <td><?= $record['hours'] ?></td>
+                                                    <td>
+                                                        <?= $record['hours'] ?> ore<br>
+                                                        <small class="text-success">€<?= number_format($guadagno_netto, 2) ?> netto</small>
+                                                    </td>
+                                                    <td>
+                                                        <span class="badge badge-<?= $tipo_straordinario ?>">
+                                                            <?= t($tipo_straordinario === 'feriale' ? 'weekday' : ($tipo_straordinario === 'festivo' ? 'holiday' : 'night'), $current_lang) ?>
+                                                        </span>
+                                                    </td>
                                                     <td><?= htmlspecialchars($record['description'] ?: '-') ?></td>
                                                     <td>
-                                                        <button class="btn btn-sm btn-outline-primary" onclick="editRecord(<?= $record['id'] ?>, '<?= $record['company_id'] ?>', '<?= $record['date'] ?>', <?= $record['hours'] ?>, '<?= htmlspecialchars($record['description']) ?>')">
+                                                        <button class="btn btn-sm btn-outline-primary" onclick="editRecord(<?= $record['id'] ?>, '<?= $record['company_id'] ?>', '<?= $record['date'] ?>', <?= $record['hours'] ?>, '<?= htmlspecialchars($record['description']) ?>', '<?= $tipo_straordinario ?>')">
                                                             <i class="fas fa-edit"></i>
                                                         </button>
                                                         <form method="POST" action="" style="display: inline;">
@@ -409,44 +533,8 @@ $current_tab = $_GET['tab'] ?? 'main';
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 mb-4">
-                    <!-- Monthly Summary -->
-                    <div class="card slide-in-left h-100">
-                        <div class="card-header">
-                            <i class="fas fa-chart-bar me-2"></i>
-                            <?= t('monthly_summary', $current_lang) ?>
-                        </div>
-                        <div class="card-body">
-                            <?php if (empty($monthly_summary)): ?>
-                                <p class="text-muted"><?= t('no_data_month', $current_lang) ?></p>
-                            <?php else: ?>
-                                <div class="mb-3 text-end">
-                                    <a href="export.php" class="btn btn-export">
-                                        <i class="fas fa-file-excel me-2"></i><?= t('export_excel', $current_lang) ?>
-                                    </a>
-                                </div>
-                                <div class="row">
-                                    <?php foreach ($monthly_summary as $summary): ?>
-                                        <div class="col-12 mb-3">
-                                            <div class="card">
-                                                <div class="card-body text-center">
-                                                    <h5 class="card-title">
-                                                        <span class="badge" style="background-color: <?= $summary['company_color'] ?>; color: white;">
-                                                            <?= htmlspecialchars($summary['company_name']) ?>
-                                                        </span>
-                                                    </h5>
-                                                    <h3 class="text-primary"><?= $summary['total_hours'] ?></h3>
-                                                    <small class="text-muted"><?= t('hours', $current_lang) ?></small>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    <?php endforeach; ?>
-                                </div>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-                </div>
             </div>
+
 
         <?php elseif ($current_tab === 'companies'): ?>
             <!-- Add Company Form -->
@@ -568,6 +656,15 @@ $current_tab = $_GET['tab'] ?? 'main';
                         </div>
                         
                         <div class="mb-3">
+                            <label for="edit_tipo_straordinario" class="form-label"><?= t('overtime_type', $current_lang) ?></label>
+                            <select name="tipo_straordinario" id="edit_tipo_straordinario" class="form-select" required>
+                                <option value="feriale"><?= t('weekday', $current_lang) ?></option>
+                                <option value="festivo"><?= t('holiday', $current_lang) ?></option>
+                                <option value="notturno"><?= t('night', $current_lang) ?></option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
                             <label for="edit_description" class="form-label"><?= t('description', $current_lang) ?></label>
                             <input type="text" name="description" id="edit_description" class="form-control">
                         </div>
@@ -579,17 +676,17 @@ $current_tab = $_GET['tab'] ?? 'main';
                 </form>
             </div>
         </div>
-        <?php echo password_hash('LoreSTRAORDINARI!996', PASSWORD_DEFAULT); ?>  
     </div>
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        function editRecord(id, companyId, date, hours, description) {
+        function editRecord(id, companyId, date, hours, description, tipoStraordinario) {
             document.getElementById('edit_id').value = id;
             document.getElementById('edit_company_id').value = companyId;
             document.getElementById('edit_date').value = date;
             document.getElementById('edit_hours').value = hours;
             document.getElementById('edit_description').value = description;
+            document.getElementById('edit_tipo_straordinario').value = tipoStraordinario || 'feriale';
             
             new bootstrap.Modal(document.getElementById('editModal')).show();
         }
