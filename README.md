@@ -52,18 +52,37 @@ straordinari/
    ```
 
 3. **Configure the database**:
-   - Import `database.sql` into your MySQL database
-   - Edit `config.php` with your database credentials (if present)
+   - Create a MySQL database named `straordinari`
+   - Import the database structure (see `straordinari(1).sql` for reference)
+   - Copy `config.example.php` to `config.php`
+   - Edit `config.php` with your database credentials:
+     ```php
+     define('DB_HOST', 'localhost');
+     define('DB_NAME', 'straordinari');
+     define('DB_USER', 'your_username');
+     define('DB_PASS', 'your_password');
+     ```
 
-4. **Start the server**:
+4. **Set up security**:
+   - Ensure the `security_headers.php` file is included in all pages
+   - Configure your web server to use the provided `.htaccess` file
+
+5. **Start the server**:
    ```bash
    php -S localhost:8000
    ```
 
-5. **Open in your browser**:
+6. **Open in your browser**:
    ```
    http://localhost:8000
    ```
+
+## Security Notes
+
+- **Never commit `config.php`** - it contains sensitive database credentials
+- **Never commit `*.sql` files** - they may contain real data
+- **Never commit `*.log` files** - they may contain sensitive information
+- The `.gitignore` file is configured to exclude sensitive files automatically
 
 ## Main Features
 

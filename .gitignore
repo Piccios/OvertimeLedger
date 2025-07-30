@@ -72,4 +72,36 @@ yarn-error.log*
 robots.txt.local 
 .htacces
 .htaccess_backup
-SECURITY.md
+
+# Security files (optional - you might want to share SECURITY.md)
+# SECURITY.md
+
+# Database files
+*.sql
+*.sqlite
+*.sqlite3
+
+# Session files
+sess_*
+
+# Temporary files
+*.tmp
+*.temp
+*.cache
+
+# Backup files
+*.bak
+*.backup
+*.old
+
+# Environment files
+.env*
+!.env.example
+
+# Configuration files with sensitive data
+config.php
+config.local.php
+config.production.php
+
+
+
