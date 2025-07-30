@@ -70,3 +70,6 @@ yarn-error.log*
 # Local development files
 .htaccess.local
 robots.txt.local 
+.htacces
+.htaccess_backup
+SECURITY.md
