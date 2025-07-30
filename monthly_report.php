@@ -1,5 +1,4 @@
 <?php
-session_start();
 require_once 'login/auth.php';
 require_once 'config.php';
 

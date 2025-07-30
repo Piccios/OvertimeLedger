@@ -1,5 +1,5 @@
 <?php
-session_start();
+require_once 'security_headers.php';
 require_once 'login/auth.php';
 require_once 'config.php';
 
@@ -8,6 +8,9 @@ requireLogin();
 
 $pdo = getDBConnection();
 $user_id = getCurrentUserId();
+
+// Generate CSRF token
+$csrf_token = generateCSRFToken();
 
 // Define current language
 $current_lang = $_GET['lang'] ?? 'it';
@@ -140,14 +143,36 @@ function calcolaGuadagnoNetto($guadagno_lordo) {
 
 // Handle POST requests
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Verifica CSRF token
+    if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
+        $_SESSION['flash_message'] = 'security_error';
+        header('Location: index.php');
+        exit;
+    }
+    
     if (isset($_POST['action'])) {
         switch ($_POST['action']) {
             case 'add':
-                $company_id = $_POST['company_id'];
-                $date = $_POST['date'];
-                $hours = $_POST['hours'];
-                $description = $_POST['description'] ?? '';
-                $tipo_straordinario = $_POST['tipo_straordinario'] ?? 'feriale';
+                // Sanitizza e valida input
+                $company_id = filter_var($_POST['company_id'], FILTER_VALIDATE_INT);
+                $date = sanitizeInput($_POST['date']);
+                $hours = filter_var($_POST['hours'], FILTER_VALIDATE_FLOAT);
+                $description = sanitizeInput($_POST['description'] ?? '');
+                $tipo_straordinario = sanitizeInput($_POST['tipo_straordinario'] ?? 'feriale');
+                
+                // Validazione
+                if (!$company_id || !$date || !$hours || $hours <= 0 || $hours > 24) {
+                    $_SESSION['flash_message'] = 'validation_error';
+                    header('Location: index.php');
+                    exit;
+                }
+                
+                // Verifica che la data sia valida
+                if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+                    $_SESSION['flash_message'] = 'validation_error';
+                    header('Location: index.php');
+                    exit;
+                }
                 
                 $stmt = $pdo->prepare("INSERT INTO extra_hours (company_id, date, hours, description, tipo_straordinario, user_id) VALUES (?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE hours = ?, description = ?, tipo_straordinario = ?");
                 $stmt->execute([$company_id, $date, $hours, $description, $tipo_straordinario, $user_id, $hours, $description, $tipo_straordinario]);
@@ -157,7 +182,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
                 
             case 'delete':
-                $id = $_POST['id'];
+                $id = filter_var($_POST['id'], FILTER_VALIDATE_INT);
+                
+                if (!$id) {
+                    $_SESSION['flash_message'] = 'validation_error';
+                    header('Location: index.php');
+                    exit;
+                }
+                
                 $stmt = $pdo->prepare("DELETE FROM extra_hours WHERE id = ? AND user_id = ?");
                 $stmt->execute([$id, $user_id]);
                 
@@ -166,12 +198,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
                 
             case 'edit':
-                $id = $_POST['id'];
-                $company_id = $_POST['company_id'];
-                $date = $_POST['date'];
-                $hours = $_POST['hours'];
-                $description = $_POST['description'] ?? '';
-                $tipo_straordinario = $_POST['tipo_straordinario'] ?? 'feriale';
+                $id = filter_var($_POST['id'], FILTER_VALIDATE_INT);
+                $company_id = filter_var($_POST['company_id'], FILTER_VALIDATE_INT);
+                $date = sanitizeInput($_POST['date']);
+                $hours = filter_var($_POST['hours'], FILTER_VALIDATE_FLOAT);
+                $description = sanitizeInput($_POST['description'] ?? '');
+                $tipo_straordinario = sanitizeInput($_POST['tipo_straordinario'] ?? 'feriale');
+                
+                // Validazione
+                if (!$id || !$company_id || !$date || !$hours || $hours <= 0 || $hours > 24) {
+                    $_SESSION['flash_message'] = 'validation_error';
+                    header('Location: index.php');
+                    exit;
+                }
+                
+                // Verifica che la data sia valida
+                if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $date)) {
+                    $_SESSION['flash_message'] = 'validation_error';
+                    header('Location: index.php');
+                    exit;
+                }
                 
                 $stmt = $pdo->prepare("UPDATE extra_hours SET company_id = ?, date = ?, hours = ?, description = ?, tipo_straordinario = ? WHERE id = ? AND user_id = ?");
                 $stmt->execute([$company_id, $date, $hours, $description, $tipo_straordinario, $id, $user_id]);
@@ -181,19 +227,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 exit;
                 
             case 'add_company':
-                $name = trim($_POST['name']);
-                $color = $_POST['color'] ?? '#6c757d';
+                $name = sanitizeInput(trim($_POST['name']));
+                $color = sanitizeInput($_POST['color'] ?? '#6c757d');
                 
-                if (!empty($name)) {
-                    $stmt = $pdo->prepare("INSERT INTO companies (name, color) VALUES (?, ?)");
-                    $stmt->execute([$name, $color]);
-                    $_SESSION['flash_message'] = 'company_added';
+                // Validazione
+                if (empty($name) || strlen($name) > 100) {
+                    $_SESSION['flash_message'] = 'validation_error';
+                    header('Location: index.php?tab=companies');
+                    exit;
                 }
+                
+                // Verifica che il colore sia valido
+                if (!preg_match('/^#[0-9a-fA-F]{6}$/', $color)) {
+                    $color = '#6c757d';
+                }
+                
+                $stmt = $pdo->prepare("INSERT INTO companies (name, color) VALUES (?, ?)");
+                $stmt->execute([$name, $color]);
+                $_SESSION['flash_message'] = 'company_added';
                 header('Location: index.php?tab=companies');
                 exit;
                 
             case 'delete_company':
-                $id = $_POST['id'];
+                $id = filter_var($_POST['id'], FILTER_VALIDATE_INT);
+                
+                if (!$id) {
+                    $_SESSION['flash_message'] = 'validation_error';
+                    header('Location: index.php?tab=companies');
+                    exit;
+                }
                 
                 // Check if company has any records
                 $stmt = $pdo->prepare("SELECT COUNT(*) FROM extra_hours WHERE company_id = ?");
@@ -408,6 +470,7 @@ $current_tab = $_GET['tab'] ?? 'main';
                 <div class="card-body">
                     <form method="POST" action="">
                         <input type="hidden" name="action" value="add">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
                         
                         <div class="row">
                             <div class="col-md-3 mb-3">
@@ -519,6 +582,7 @@ $current_tab = $_GET['tab'] ?? 'main';
                                                         <form method="POST" action="" style="display: inline;">
                                                             <input type="hidden" name="action" value="delete">
                                                             <input type="hidden" name="id" value="<?= $record['id'] ?>">
+                                                            <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
                                                             <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('<?= t('confirm_delete', $current_lang) ?>')">
                                                                 <i class="fas fa-trash"></i>
                                                             </button>
@@ -546,6 +610,7 @@ $current_tab = $_GET['tab'] ?? 'main';
                 <div class="card-body">
                     <form method="POST" action="">
                         <input type="hidden" name="action" value="add_company">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
                         
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -604,6 +669,7 @@ $current_tab = $_GET['tab'] ?? 'main';
                                                 <form method="POST" action="" style="display: inline;">
                                                     <input type="hidden" name="action" value="delete_company">
                                                     <input type="hidden" name="id" value="<?= $company['id'] ?>">
+                                                    <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
                                                     <button class="btn btn-sm btn-outline-primary me-2" onclick="editCompany(<?= $company['id'] ?>, '<?= $company['name'] ?>', '<?= $company['color'] ?>')">
                                                         <i class="fas fa-edit"></i>
                                                     </button>
@@ -635,6 +701,7 @@ $current_tab = $_GET['tab'] ?? 'main';
                     <div class="modal-body">
                         <input type="hidden" name="action" value="edit">
                         <input type="hidden" name="id" id="edit_id">
+                        <input type="hidden" name="csrf_token" value="<?= htmlspecialchars($csrf_token) ?>">
                         
                         <div class="mb-3">
                             <label for="edit_company_id" class="form-label"><?= t('company', $current_lang) ?></label>
