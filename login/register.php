@@ -10,34 +10,61 @@ $response = [
 ];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $username = trim($_POST['username'] ?? '');
-    $email = trim($_POST['email'] ?? '');
-    $password = $_POST['password'] ?? '';
-
-    // Validazione base
-    if (!$username || !$email || !$password) {
-        $response['message'] = 'Tutti i campi sono obbligatori.';
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $response['message'] = 'Email non valida.';
-    } elseif (strlen($password) < 6) {
-        $response['message'] = 'La password deve essere di almeno 6 caratteri.';
+    // Verifica CSRF token
+    if (!validateCSRFToken($_POST['csrf_token'] ?? '')) {
+        $response['message'] = 'Errore di sicurezza. Ricarica la pagina e riprova.';
     } else {
-        $pdo = getDBConnection();
-        // Controllo username/email duplicati
-        $stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE username = ? OR email = ?');
-        $stmt->execute([$username, $email]);
-        if ($stmt->fetchColumn() > 0) {
-            $response['message'] = 'Username o email già registrati.';
+        // Sanitizza input
+        $username = sanitizeInput($_POST['username'] ?? '');
+        $email = sanitizeInput($_POST['email'] ?? '');
+        $password = $_POST['password'] ?? '';
+
+        // Validazione input
+        if (!$username || !$email || !$password) {
+            $response['message'] = 'Tutti i campi sono obbligatori.';
+        } elseif (!preg_match('/^[a-zA-Z0-9_]+$/', $username)) {
+            $response['message'] = 'Username può contenere solo lettere, numeri e underscore.';
+        } elseif (strlen($username) < 3 || strlen($username) > 50) {
+            $response['message'] = 'Username deve essere tra 3 e 50 caratteri.';
+        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $response['message'] = 'Email non valida.';
+        } elseif (strlen($email) > 255) {
+            $response['message'] = 'Email troppo lunga.';
         } else {
-            // Inserimento utente
-            $hash = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $pdo->prepare('INSERT INTO users (username, email, password_hash, role) VALUES (?, ?, ?, ?)');
-            $success = $stmt->execute([$username, $email, $hash, 'user']);
-            if ($success) {
-                $response['success'] = true;
-                $response['message'] = 'Registrazione avvenuta con successo! Ora puoi accedere.';
+            // Validazione password
+            $password_validation = validatePassword($password);
+            if (!$password_validation['valid']) {
+                $response['message'] = $password_validation['message'];
             } else {
-                $response['message'] = 'Errore durante la registrazione.';
+                $pdo = getDBConnection();
+                
+                // Controllo username/email duplicati
+                $stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE username = ? OR email = ?');
+                $stmt->execute([$username, $email]);
+                if ($stmt->fetchColumn() > 0) {
+                    $response['message'] = 'Username o email già registrati.';
+                } else {
+                    // Inserimento utente con validazione aggiuntiva
+                    try {
+                        $hash = password_hash($password, PASSWORD_DEFAULT);
+                        $stmt = $pdo->prepare('INSERT INTO users (username, email, password_hash, role, created_at) VALUES (?, ?, ?, ?, NOW())');
+                        $success = $stmt->execute([$username, $email, $hash, 'user']);
+                        
+                        if ($success) {
+                            $response['success'] = true;
+                            $response['message'] = 'Registrazione avvenuta con successo! Ora puoi accedere.';
+                            
+                            // Log della registrazione
+                            $client_ip = getClientIP();
+                            recordLoginAttempt($client_ip, $username, true, 'register');
+                        } else {
+                            $response['message'] = 'Errore durante la registrazione.';
+                        }
+                    } catch (PDOException $e) {
+                        error_log("Registration error: " . $e->getMessage());
+                        $response['message'] = 'Errore durante la registrazione. Riprova più tardi.';
+                    }
+                }
             }
         }
     }
