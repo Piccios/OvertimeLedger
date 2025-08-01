@@ -39,9 +39,7 @@
     --spacing-xl: 2rem;
     --spacing-2xl: 3rem;
     
-    /* Transitions */
-    --transition-smooth: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    /* Transitions - Removed for performance */
     
     /* Typography */
     --font-family: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -68,12 +66,11 @@ body {
     padding: 0;
 }
 
-/* Scroll animations */
+/* Scroll animations - Transitions removed */
 @media (prefers-reduced-motion: no-preference) {
     .fade-in-up {
         opacity: 0;
         transform: translateY(20px);
-        transition: var(--transition-smooth);
     }
     
     .fade-in-up.animate {
@@ -84,7 +81,6 @@ body {
     .slide-in-left {
         opacity: 0;
         transform: translateX(-20px);
-        transition: var(--transition-smooth);
     }
     
     .slide-in-left.animate {
@@ -95,7 +91,6 @@ body {
     .scale-in {
         opacity: 0;
         transform: scale(0.95);
-        transition: var(--transition-smooth);
     }
     
     .scale-in.animate {
@@ -198,7 +193,6 @@ strong, b {
 a {
     color: var(--text-primary);
     text-decoration: none;
-    transition: var(--transition-smooth);
     border-bottom: 1px solid transparent;
 }
 
@@ -251,12 +245,10 @@ a:hover {
     border-radius: var(--border-radius-lg);
     box-shadow: var(--shadow-md);
     overflow: hidden;
-    transition: var(--transition-smooth);
 }
 
 .card:hover {
     box-shadow: var(--shadow-lg);
-    transform: translateY(-2px);
 }
 
 .card-header {
@@ -280,7 +272,6 @@ a:hover {
     border-radius: var(--border-radius);
     padding: 0.75rem 1.5rem;
     border: 1px solid transparent;
-    transition: var(--transition-smooth);
     text-decoration: none;
     display: inline-flex;
     align-items: center;
@@ -299,8 +290,6 @@ a:hover {
     background: #DDD4E9;
     border-color: #DDD4E9;
     color: var(--text-primary);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
 }
 
 .btn-outline-secondary {
@@ -313,8 +302,6 @@ a:hover {
     background: var(--secondary-color);
     border-color: var(--secondary-color);
     color: var(--text-primary);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
 }
 
 .btn-sm {
@@ -333,8 +320,6 @@ a:hover {
     background: #C5E7D0;
     border-color: #C5E7D0;
     color: var(--text-primary);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
 }
 
 .btn-danger {
@@ -347,8 +332,6 @@ a:hover {
     background: #F56565;
     border-color: #F56565;
     color: var(--text-white);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
 }
 
 .btn-warning {
@@ -361,8 +344,6 @@ a:hover {
     background: #ECC94B;
     border-color: #ECC94B;
     color: var(--text-primary);
-    transform: translateY(-1px);
-    box-shadow: var(--shadow-md);
 }
 
 /* Forms */
@@ -371,7 +352,6 @@ a:hover {
     border: 1px solid var(--border-color);
     border-radius: var(--border-radius);
     padding: 0.75rem 1rem;
-    transition: var(--transition-smooth);
     color: var(--text-primary);
     font-family: var(--font-family);
     font-size: 0.9375rem;
@@ -590,7 +570,6 @@ a:hover {
     border-radius: var(--border-radius-sm);
     padding: var(--spacing-sm) var(--spacing-md);
     font-size: 0.875rem;
-    transition: var(--transition-smooth);
 }
 
 .language-selector .btn:hover {
@@ -635,7 +614,6 @@ a:hover {
 .progress-bar {
     background: var(--primary-color);
     border-radius: var(--border-radius-sm);
-    transition: var(--transition-smooth);
 }
 
 /* Empty State */

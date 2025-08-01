@@ -1,6 +1,11 @@
 <?php
-require_once 'login/auth.php';
+// Debug temporaneo per identificare problemi
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+require_once 'security_headers.php';
 require_once 'config.php';
+require_once 'login/auth.php';
 
 requireLogin();
 $pdo = getDBConnection();
@@ -404,6 +409,7 @@ if (!empty($filter_date)) {
 
 $total_guadagno_lordo = 0;
 $total_guadagno_netto = 0;
+$total_ore_straordinarie = 0;
 $monthly_summary = [];
 foreach ($monthly_data as $data) {
     $company_id = $data['company_id'];
@@ -415,6 +421,7 @@ foreach ($monthly_data as $data) {
     $guadagno_netto = calcolaGuadagnoNetto($guadagno_lordo);
     $total_guadagno_lordo += $guadagno_lordo;
     $total_guadagno_netto += $guadagno_netto;
+    $total_ore_straordinarie += $ore;
     if (!isset($monthly_summary[$company_id])) {
         $monthly_summary[$company_id] = [
             'company_name' => $company_name,
@@ -540,13 +547,17 @@ error_log("Total guadagno netto: " . $total_guadagno_netto);
                                                 <?= t('monthly_earnings', $current_lang) ?>
                                             </h4>
                                             <div class="row g-2">
-                                                <div class="col-6">
+                                                <div class="col-4">
                                                     <h3 class="text-success mb-0">€<?= number_format($total_guadagno_lordo, 2) ?></h3>
                                                     <small class="text-muted"><?= t('gross_salary', $current_lang) ?></small>
                                                 </div>
-                                                <div class="col-6">
+                                                <div class="col-4">
                                                     <h3 class="text-primary mb-0">€<?= number_format($total_guadagno_netto, 2) ?></h3>
                                                     <small class="text-muted"><?= t('net_salary', $current_lang) ?></small>
+                                                </div>
+                                                <div class="col-4">
+                                                    <h3 class="text-warning mb-0"><?= number_format($total_ore_straordinarie, 1) ?></h3>
+                                                    <small class="text-muted"><?= t('hours', $current_lang) ?></small>
                                                 </div>
                                             </div>
                                         </div>
@@ -850,13 +861,13 @@ error_log("Total guadagno netto: " . $total_guadagno_netto);
     <script>
         // Traduzioni per JavaScript
         const translations = {
-            loading: '<?= t('loading', $current_lang) ?>',
-            filter_error: '<?= t('filter_error', $current_lang) ?>',
-            apply_filters: '<?= t('apply_filters', $current_lang) ?>',
-            filtered_records: '<?= t('filtered_records', $current_lang) ?>',
-            record: '<?= $current_lang === 'it' ? 'record' : 'record' ?>',
-            records: '<?= $current_lang === 'it' ? 'records' : 'records' ?>',
-            of_total: '<?= $current_lang === 'it' ? 'su' : 'of' ?>'
+            loading: <?= json_encode(t('loading', $current_lang)) ?>,
+            filter_error: <?= json_encode(t('filter_error', $current_lang)) ?>,
+            apply_filters: <?= json_encode(t('apply_filters', $current_lang)) ?>,
+            filtered_records: <?= json_encode(t('filtered_records', $current_lang)) ?>,
+            record: <?= json_encode($current_lang === 'it' ? 'record' : 'record') ?>,
+            records: <?= json_encode($current_lang === 'it' ? 'records' : 'records') ?>,
+            of_total: <?= json_encode($current_lang === 'it' ? 'su' : 'of') ?>
         };
         
         // Aggiunge la classe 'animate' quando gli elementi con classi di animazione entrano in view
