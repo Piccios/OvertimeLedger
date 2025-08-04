@@ -12,8 +12,9 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 
 $pdo = getDBConnection();
 
-// Recupera mese corrente
-$current_month = date('Y-m');
+// Recupera mese dal parametro URL o usa mese corrente
+$current_month = $_GET['month'] ?? date('Y-m');
+
 $stmt = $pdo->prepare("
     SELECT c.name as company_name, c.color as company_color, eh.date, eh.hours, eh.description
     FROM extra_hours eh

@@ -614,7 +614,7 @@ error_log("Total guadagno netto: " . $total_guadagno_netto);
                                     </div>
                                     <?php endforeach; ?>
                                     <div class="mb-3 text-end">
-                                        <a href="export.php" class="btn btn-export">
+                                        <a href="export.php?month=<?= htmlspecialchars($current_month) ?>" class="btn btn-export">
                                             <i class="fas fa-file-excel me-2"></i><?= t('export_excel', $current_lang) ?>
                                         </a>
                                     </div>
