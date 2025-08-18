@@ -121,35 +121,8 @@ define('DB_USER', $_ENV['DB_USER'] ?? 'root');
 define('DB_PASS', $_ENV['DB_PASS'] ?? '');
 ```
 
-## Test di Sicurezza
 
-### Checklist
-- [ ] Test SQL Injection
-- [ ] Test XSS
-- [ ] Test CSRF
-- [ ] Test Rate Limiting
-- [ ] Test Session Security
-- [ ] Test Input Validation
-- [ ] Test Password Security
 
-### Strumenti Consigliati
-- OWASP ZAP
-- Burp Suite
-- SQLMap (solo per test autorizzati)
-
-## Incident Response
-
-### In Caso di Breach
-1. **Isolare**: Disconnettere il sistema compromesso
-2. **Analizzare**: Identificare la vulnerabilità
-3. **Correggere**: Applicare le patch necessarie
-4. **Monitorare**: Aumentare il monitoraggio
-5. **Documentare**: Registrare l'incidente
-
-### Contatti di Emergenza
-- Amministratore sistema: [email]
-- Team sicurezza: [email]
-- Provider hosting: [contatti]
 
 ---
 
